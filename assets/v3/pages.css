@@ -322,6 +322,17 @@ html.is-accessibility-mode .pg .sec-title, html.is-accessibility-mode .pg .eyebr
   .dhelp[data-v="3"] .dhelp__item:nth-child(4) .dhelp__pic img { position: absolute; inset: 0; }
 }
 @media (max-width: 1099px) and (min-width: 761px) { .dhelp[data-v="3"] .dhelp__list { grid-template-columns: 1fr 1fr; } .dhelp[data-v="3"] .dhelp__item:first-child { grid-column: 1 / -1; } }
+/* пунктов больше четырёх (другие врачи): справа от крупного две пары плиток, шестой пункт широкой полосой снизу */
+.dhelp[data-v="3"] .dhelp__item--text { justify-content: flex-end; min-height: clamp(200px, 16vw, 260px); }
+@media (min-width: 1100px) {
+  .dhelp[data-v="3"] .dhelp__list:is([data-count="5"], [data-count="6"]) .dhelp__item:nth-child(4) { grid-column: auto; display: flex; min-height: 0; }
+  .dhelp[data-v="3"] .dhelp__list:is([data-count="5"], [data-count="6"]) .dhelp__item:nth-child(4) .dhelp__pic { position: static; order: 0; aspect-ratio: 16 / 10; }
+  .dhelp[data-v="3"] .dhelp__list:is([data-count="5"], [data-count="6"]) .dhelp__item:nth-child(4) .dhelp__pic img { position: static; }
+  .dhelp[data-v="3"] .dhelp__list[data-count="6"] .dhelp__item:nth-child(6) { grid-column: 1 / -1; display: grid; grid-template-columns: 1.15fr 2fr; min-height: clamp(240px, 19vw, 320px); }
+  .dhelp[data-v="3"] .dhelp__list[data-count="6"] .dhelp__item:nth-child(6) .dhelp__pic { position: relative; order: 2; aspect-ratio: auto; }
+  .dhelp[data-v="3"] .dhelp__list[data-count="6"] .dhelp__item:nth-child(6) .dhelp__pic img { position: absolute; inset: 0; }
+  .dhelp[data-v="3"] .dhelp__list[data-count="6"] .dhelp__item:nth-child(6) .dhelp__text { align-self: end; }
+}
 
 /* ================= ОБРАЗОВАНИЕ ================= */
 .dedu__grid { display: grid; gap: clamp(36px, 5vw, 72px); }
@@ -514,6 +525,9 @@ html.is-accessibility-mode .pg .sec-title, html.is-accessibility-mode .pg .eyebr
   .dcerts[data-v="3"].has-show .dcert__media { cursor: pointer; }
 }
 @media (max-width: 760px) { .dcerts[data-v="3"] .dcerts__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+/* два-три документа: миниатюры крупнее, без пустых колонок */
+.dcerts[data-v="3"] .dcerts__grid:has(> .dcert:nth-child(2):last-child) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.dcerts[data-v="3"] .dcerts__grid:has(> .dcert:nth-child(3):last-child) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 
 /* ===== 20-service.css ===== */
 /* =========================================================================
