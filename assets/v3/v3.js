@@ -316,27 +316,19 @@
   });
 
   // ---------- варианты секций ----------
-  // Десктоп (от 1100 px): секция получает data-dv="N", подвал — data-fv. Телефон (до 760 px): data-mv="N".
-  // Без атрибута — нынешний вид; планшет не меняется. Переключатели есть только в превью:
-  // build.py --preview ставит на <main> data-dv-switch со списком секций, у которых есть десктопные варианты.
+  // Илья выбрал варианты: десктоп (от 1100 px) 2026-10-19, телефон (до 760 px) 2026-10-18. Выбор стоит прямо
+  // в разметке (data-dv="N" и data-mv="N"), без атрибута — прежний вид; планшет не меняется. Панелей больше нет,
+  // списки нужны эффектам вариантов (dvFx и mvFx): у каждой секции выполняется эффект её варианта
   const DV = [
-    ["hero", ".hero", "Первый экран", ["Сейчас", "Витрина", "Манифест", "Окно"]],
-    ["treatment-start", ".treatment-start", "С чего начать", ["Сейчас", "Панорама", "Колода", "Указатель"]],
-    ["diagnosis", ".diagnosis", "Диагностика", ["Сейчас", "Сюжет", "Линия этапов", "Бенто"]],
-    ["restoration", ".restoration", "Восстановление", ["Сейчас", "Вкладки", "Три колонки", "Разворот"]],
+    ["hero", ".hero", "Первый экран", ["Сейчас"]],
+    ["treatment-start", ".treatment-start", "С чего начать", ["Сейчас", "Панорама"]],
+    ["diagnosis", ".diagnosis", "Диагностика", ["Сейчас", "Сюжет"]],
+    ["restoration", ".restoration", "Восстановление", ["Сейчас", "Вкладки", "Три колонки"]],
     ["ortho", ".ortho", "Ортодонтия", ["Сейчас", "Полотно", "Сравнение", "Витрина"]],
-    ["therapy", ".therapy", "Лечение зубов", ["Сейчас", "Ряд", "Созвездие", "Список"]],
-    ["directions", ".directions", "Направления", ["Сейчас", "Плитки", "Оглавление", "Облако", "Табло", "Бегущая строка"]],
-    ["doctors", ".doctors", "Врачи", ["Сейчас", "Сетка", "Шахматка", "Портрет"]],
-    ["clinic", ".clinic", "Клиника", ["Сейчас", "Мозаика", "Тур", "Полоса"]],
-    ["prices", ".prices", "Цены", ["Сейчас", "Меню", "Светлый", "Две панели"]],
-    ["reviews", ".reviews", "Отзывы", ["Сейчас", "Стена", "Цитата", "Рейтинг"]],
-    ["faq", ".faq", "Вопросы", ["Сейчас", "Две колонки", "Заголовок слева", "Фото сверху"]],
-    ["contacts", ".contacts", "Контакты", ["Сейчас", "Карта", "Форма", "Три колонки"]],
-    ["footer", ".site-footer", "Подвал", ["Было", "Табличка", "Светлый", "Знак"], ["", "plaque", "light", "photo"]],
+    ["clinic", ".clinic", "Клиника", ["Сейчас"]],
+    ["reviews", ".reviews", "Отзывы", ["Сейчас", "Стена", "Цитата"]],
+    ["faq", ".faq", "Вопросы", ["Сейчас", "Две колонки"]],
   ];
-  // телефон: Илья выбрал варианты (2026-10-18), data-mv стоит прямо в разметке, панели для телефона больше нет;
-  // список нужен эффектам вариантов (mvFx)
   const MV = [
     ["restoration", ".restoration", "Восстановление", ["Сейчас"]],
     ["therapy", ".therapy", "Лечение зубов", ["Сейчас", "Список"]],
@@ -346,13 +338,12 @@
     ["clinic-photos", ".photorail", "Клиника: фото", ["Сейчас", "Журнал", "Мозаика"]],
     ["faq", ".faq", "Вопросы", ["Сейчас", "Плакат", "Открытка"]],
   ];
-  const mkVariants = (list, attr, store) => {
+  const mkVariants = (list, attr) => {
     const find = (key) => list.find((d) => d[0] === key);
     const el = (key) => $(find(key)?.[1] || "#none");
     const get = (key) => {
       const d = find(key), e = el(key);
       if (!d || !e) return 0;
-      if (d[4]) return Math.max(0, d[4].indexOf(e.dataset.fv || ""));
       return Number(e.dataset[attr]) || 0;
     };
     const hooks = [];
@@ -361,87 +352,19 @@
       const d = find(key), e = el(key);
       if (!d || !e) return;
       const top0 = e.getBoundingClientRect().top;
-      if (d[4]) { if (d[4][v]) e.dataset.fv = d[4][v]; else delete e.dataset.fv; }
-      else if (v) e.dataset[attr] = String(v); else delete e.dataset[attr];
+      if (v) e.dataset[attr] = String(v); else delete e.dataset[attr];
       hooks.forEach((fn) => fn(key, e, v));
       if (keep) {
         const dy = e.getBoundingClientRect().top - top0;
         if (Math.abs(dy) > 1) window.scrollBy(0, dy);
       }
     };
-    return { list, store, el, get, set, hooks };
+    return { list, el, get, set, hooks };
   };
-  const VD = mkVariants(DV, "dv", "dh-v3-dv"), VM = mkVariants(MV, "mv", "dh-v3-mv");
+  const VD = mkVariants(DV, "dv"), VM = mkVariants(MV, "mv");
   // для проверок из консоли и автотестов: __dv.set("diagnosis", 2), __mv.set("therapy", 1)
   window.__dv = { set: (key, v) => VD.set(key, v, true), get: VD.get, list: () => DV.map((d) => d[0]) };
   window.__mv = { set: (key, v) => VM.set(key, v, true), get: VM.get, list: () => MV.map((d) => d[0]) };
-
-  // панель выбора: название секции под серединой экрана, кнопки вариантов, «Мой выбор» со списком
-  const vPanel = (V, switchAttr, mod, device) => {
-    const host = $(`main[${switchAttr}]`);
-    if (!host) return;
-    const keys = (host.getAttribute(switchAttr) || "").split(" ").filter(Boolean);
-    const on = (key) => !!V.el(key) && (!keys.length || keys.includes(key));
-    if (!V.list.some(([k]) => on(k))) return;
-    let saved = {};
-    try { saved = JSON.parse(localStorage.getItem(V.store) || "{}"); } catch (e) { /* приватный режим */ }
-    V.list.forEach(([key]) => { if (Number.isInteger(saved[key])) V.set(key, saved[key]); });
-    const save = () => { try { localStorage.setItem(V.store, JSON.stringify(Object.fromEntries(V.list.map(([k]) => [k, V.get(k)])))); } catch (e) { /* приватный режим */ } };
-    const panel = document.createElement("div");
-    panel.className = "dv-panel dv-panel--" + mod;
-    panel.setAttribute("role", "region");
-    panel.setAttribute("aria-label", "Варианты секций");
-    panel.innerHTML = '<div class="dv-panel__bar"><span class="dv-panel__name"></span><span class="dv-panel__opts" role="group"></span><button type="button" class="dv-panel__all" aria-expanded="false">Мой выбор</button></div>'
-      + '<div class="dv-panel__list" hidden><ul></ul><div class="dv-panel__acts"><button type="button" data-dv-copy>Скопировать выбор</button><button type="button" data-dv-reset>Всё как сейчас</button><button type="button" data-dv-hide>Скрыть панель</button></div></div>';
-    document.body.appendChild(panel);
-    const nameEl = $(".dv-panel__name", panel), opts = $(".dv-panel__opts", panel), list = $(".dv-panel__list", panel), allBtn = $(".dv-panel__all", panel);
-    let cur = "";
-    const label = (key) => V.list.find((x) => x[0] === key)[3][V.get(key)];
-    const drawList = () => {
-      $("ul", list).innerHTML = V.list.filter(([k]) => on(k)).map(([k, , t]) => `<li><button type="button" data-go="${k}"><span>${t}</span><b>${label(k)}</b></button></li>`).join("");
-    };
-    const drawBar = () => {
-      const d = V.list.find((x) => x[0] === cur);
-      if (!d) return;
-      nameEl.textContent = d[2];
-      const v = V.get(cur);
-      opts.innerHTML = d[3].map((t, i) => `<button type="button" data-v="${i}" aria-pressed="${i === v}">${t}</button>`).join("");
-    };
-    const pick = () => {
-      const y = innerHeight * 0.42;
-      let best = "";
-      V.list.forEach(([k]) => { if (!on(k)) return; const r = V.el(k).getBoundingClientRect(); if (r.top <= y && r.bottom > y) best = k; });
-      // на телефоне панель видна только у секций с вариантами
-      panel.classList.toggle("is-away", !best);
-      if (!best) best = cur || V.list.find(([k]) => on(k))?.[0] || "";
-      if (best !== cur) { cur = best; drawBar(); }
-    };
-    let praf = 0;
-    addEventListener("scroll", () => { if (!praf) praf = requestAnimationFrame(() => { praf = 0; pick(); }); }, { passive: true });
-    const change = (key, v) => { V.set(key, v, true); save(); drawBar(); drawList(); };
-    opts.addEventListener("click", (e) => { const b = e.target.closest("button"); if (b) change(cur, Number(b.dataset.v)); });
-    allBtn.addEventListener("click", () => { const open = list.hidden; list.hidden = !open; allBtn.setAttribute("aria-expanded", String(open)); if (open) drawList(); });
-    list.addEventListener("click", (e) => {
-      const go = e.target.closest("[data-go]");
-      if (go) { const el = V.el(go.dataset.go); if (el) scrollToEl(el); return; }
-      if (e.target.closest("[data-dv-reset]")) { V.list.forEach(([k, , , , vals]) => V.set(k, vals ? 3 : 0)); save(); drawBar(); drawList(); }
-      if (e.target.closest("[data-dv-hide]")) panel.remove();
-      if (e.target.closest("[data-dv-copy]")) {
-        const text = `Выбор вариантов главной (${device}):\n` + V.list.filter(([k]) => on(k)).map(([k, , t]) => `${t}: ${label(k)}`).join("\n");
-        const done = () => { const b = $("[data-dv-copy]", list); b.textContent = "Скопировано"; setTimeout(() => (b.textContent = "Скопировать выбор"), 1600); };
-        (navigator.clipboard?.writeText(text) || Promise.reject()).then(done, () => { prompt("Скопируйте выбор:", text); });
-      }
-    });
-    // цифры переключают вариант секции под серединой экрана (только у видимой панели)
-    addEventListener("keydown", (e) => {
-      if (e.target.closest?.("input, textarea, select, [contenteditable]") || e.metaKey || e.ctrlKey || e.altKey) return;
-      if (!panel.isConnected || getComputedStyle(panel).display === "none") return;
-      const d = V.list.find((x) => x[0] === cur);
-      if (/^[0-9]$/.test(e.key) && d && Number(e.key) < d[3].length) change(cur, Number(e.key));
-    });
-    pick();
-  };
-  vPanel(VD, "data-dv-switch", "dv", "десктоп");
 
   // ---------- наверх ----------
   $$("[data-totop]").forEach((b) => b.addEventListener("click", () => {
@@ -756,24 +679,6 @@
     return () => { ro.disconnect(); tl.scrollTrigger?.kill(); tl.kill(); veil.remove(); wrap.before(hero, next); wrap.remove(); G.set(".hero__in", { clearProps: "transform" }); setHeroCovered(false); };
   });
 
-  // 02 · диагностика: на широком экране закреплённая горизонтальная лента
-  dvFx("diagnosis", { 0: () => {
-    const pin = $(".diag__pin"), track = $(".diag__track");
-    if (!pin || !track) return;
-    const dist = () => Math.max(0, track.scrollWidth - innerWidth);
-    const st = { trigger: pin, start: "top top", end: () => "+=" + dist(), scrub: true, invalidateOnRefresh: true };
-    const tw = G.to(track, { x: () => -dist(), ease: "none", scrollTrigger: { ...st, pin: true, anticipatePin: 1 } });
-    const bar = $(".diag__progress i");
-    if (bar) G.to(bar, { scaleX: 1, ease: "none", scrollTrigger: st });
-    $$(".dstep", track).forEach((s) => {
-      s.removeAttribute("data-reveal");
-      G.fromTo(s, { opacity: 0, y: 60 }, { opacity: 1, y: 0, ease: "power2.out", scrollTrigger: { trigger: s, containerAnimation: tw, start: "left 96%", end: "left 62%", scrub: true } });
-    });
-    const scan = $(".diag__scan img");
-    if (scan) G.fromTo(scan, { scale: 1.18 }, { scale: 1, ease: "none", scrollTrigger: { trigger: ".diag__scan", containerAnimation: tw, start: "left right", end: "right left", scrub: true } });
-    const introPanel = $(".diag__intro");
-    if (introPanel) G.to(introPanel, { autoAlpha: 0.25, ease: "none", scrollTrigger: { trigger: introPanel, containerAnimation: tw, start: "right 55%", end: "right 5%", scrub: true } });
-  } });
   // 02 · на телефоне: кадр сканера закреплён, этапы сменяют друг друга, линия сканирует на каждом этапе
   mm.add("(max-width: 760px)", () => {
     const stage = $(".diag__stage");
@@ -965,60 +870,6 @@
   }
 
   // эффекты вариантов секций (design-src/v3/variants/*.js, их вставляет build.py)
-  // ----- варианты: clinic -----
-  // Клиника: эффекты вариантов 1–3 (0 — окно и лента фото, они в v3.js)
-  dvFx("clinic", {
-    // 1 · Мозаика: снимки проявляются, садясь в свои плитки (масштаб у picture, рамка плитки неподвижна)
-    1: (sec) => {
-      [$(".tour__pin", sec), ...$$(".photo", sec)].filter(Boolean).forEach((tile) => {
-        const pic = $("picture", tile);
-        if (pic) G.fromTo(pic, { scale: 1.16 }, { scale: 1, ease: "none", scrollTrigger: { trigger: tile, start: "top bottom", end: "top 30%", scrub: true } });
-      });
-      const frame = $(".tour__frame", sec);
-      if (frame) G.fromTo(frame, { opacity: 0 }, { opacity: 1, duration: 1.3, ease: "power2.out", scrollTrigger: { trigger: frame, start: "top 88%", once: true } });
-    },
-
-    // 2 · Тур: ресепшен, преимущества и кадры клиники в одной ленте; лента закреплена и едет вбок
-    2: (sec) => {
-      const tour = $(".tour", sec), rail = $(".photorail", sec);
-      if (!tour || !rail) return;
-      const parts = [tour, $(".cbenefits", sec)?.closest(".container"), rail].filter(Boolean);
-      const stage = document.createElement("div");
-      const track = document.createElement("div");
-      const bar = document.createElement("div");
-      stage.className = "dv-tour";
-      track.className = "dv-tour__track";
-      bar.className = "dv-tour__bar";
-      bar.setAttribute("aria-hidden", "true");
-      bar.innerHTML = "<i></i>";
-      tour.before(stage);
-      stage.append(track, bar);
-      track.append(...parts);
-      const dist = () => Math.max(0, track.scrollWidth - stage.clientWidth);
-      const st = { trigger: stage, start: "top top", end: () => "+=" + dist(), scrub: true, invalidateOnRefresh: true };
-      const tw = G.to(track, { x: () => -dist(), ease: "none", scrollTrigger: { ...st, pin: true, anticipatePin: 1 } });
-      G.fromTo($("i", bar), { scaleX: 0 }, { scaleX: 1, ease: "none", scrollTrigger: st });
-      // снимок в кадре отстаёт от рамки: лента читается как проход по клинике
-      [$(".tour__frame", tour), ...$$(".photo picture", rail)].forEach((box) => {
-        const img = box && $("img", box);
-        if (img) G.fromTo(img, { xPercent: -5, scale: 1.12 }, { xPercent: 5, scale: 1.12, ease: "none", scrollTrigger: { trigger: box, containerAnimation: tw, start: "left right", end: "right left", scrub: true } });
-      });
-      // подпись кадра появляется, когда кадр выходит на середину
-      $$(".photo__copy", rail).forEach((c) => G.fromTo(c, { opacity: 0, y: 14 }, { opacity: 1, y: 0, ease: "power2.out", scrollTrigger: { trigger: c, containerAnimation: tw, start: "left 92%", end: "left 64%", scrub: true } }));
-      return () => {
-        stage.before(...parts);
-        stage.remove();
-      };
-    },
-
-    // 3 · Полоса: снимок медленно плывёт в полосе, карточка поднимается поверх него
-    3: (sec) => {
-      const pin = $(".tour__pin", sec), img = $(".tour__frame img", sec), card = $(".clinic__intro", sec);
-      if (pin && img) G.fromTo(img, { yPercent: -5, scale: 1.12 }, { yPercent: 5, scale: 1.12, ease: "none", scrollTrigger: { trigger: pin, start: "top bottom", end: "bottom top", scrub: true } });
-      if (pin && card) G.fromTo(card, { y: 90 }, { y: 0, ease: "none", scrollTrigger: { trigger: pin, start: "top 85%", end: "top 10%", scrub: true } });
-    },
-  });
-
   // ----- варианты: diagnosis -----
   // 02 · «Диагностика»: эффекты вариантов (блок — чтобы имена не пересекались с другими файлами вариантов).
   // Ленту варианта 0 снимает сама смена варианта; здесь только своё.
@@ -1086,264 +937,8 @@
         tl.to({}, { duration: 0.01 }, 4);
         return () => { unsize(); veil.remove(); ring.remove(); bars.remove(); };
       },
-
-      // Линия этапов: латунная линия прорисовывается, узлы загораются, этапы проявляются по мере её прихода
-      2: (sec) => {
-        const fig = $(".diag__scan", sec), box = $(".diag__steps", sec);
-        if (!fig || !box) return;
-        const img = $("img", fig), line = $(".diag__scanline", fig), tags = $$(".diag__tag", fig), steps = $$(".dstep", box);
-        takeReveal(steps);
-        const unsize = sizesFor([fig], "62vw");
-        const draw = mk("dv-draw", box);
-        if (img) G.fromTo(img, { scale: 1.14 }, { scale: 1, ease: "none", scrollTrigger: { trigger: fig, start: "top bottom", end: "bottom 30%", scrub: true } });
-        // кадр сканируется поперёк, метка «3D» появляется, когда линия до неё дошла
-        if (line) {
-          const span = () => fig.clientWidth - 26;
-          const sweep = G.timeline({ defaults: { ease: "none" }, scrollTrigger: { trigger: fig, start: "top 72%", end: "bottom 42%", scrub: true, invalidateOnRefresh: true } })
-            .fromTo(line, { autoAlpha: 0, x: 0 }, { autoAlpha: 1, duration: 0.06 }, 0)
-            .to(line, { x: span, duration: 1 }, 0)
-            .to(line, { autoAlpha: 0, duration: 0.06 }, 0.94);
-          tags.forEach((t) => sweep.fromTo(t, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.08 }, Math.max(0, (t.offsetLeft - 12) / Math.max(1, span()))));
-        }
-        const at = (st) => st.offsetLeft / Math.max(1, box.clientWidth);
-        const parts = steps.map((st) => [...st.children]);
-        const lit = (p) => steps.forEach((st) => st.classList.toggle("is-dim", p < at(st) + 0.005));
-        const tl = G.timeline({ defaults: { ease: "none" }, scrollTrigger: { trigger: box, start: "top 84%", end: "top 38%", scrub: true, invalidateOnRefresh: true, onUpdate: (self) => lit(self.progress), onRefresh: (self) => lit(self.progress) } });
-        tl.fromTo(draw, { scaleX: 0 }, { scaleX: 1, duration: 1 }, 0);
-        steps.forEach((st, i) => parts[i].forEach((el, k) => tl.fromTo(el, { autoAlpha: 0, y: 26 }, { autoAlpha: 1, y: 0, duration: 0.16, ease: "power2.out" }, Math.min(0.84, at(st) + 0.02 + k * 0.04))));
-        return () => { unsize(); draw.remove(); steps.forEach((st) => st.classList.remove("is-dim")); };
-      },
-
-      // Бенто: плитки мягко проявляются по колонкам, снимок «садится», линия проходит по нему один раз
-      3: (sec) => {
-        const track = $(".diag__track", sec), fig = $(".diag__scan", sec);
-        if (!track || !fig) return;
-        const img = $("img", fig), line = $(".diag__scanline", fig);
-        const lead = $(".diag__lead", sec), equip = $(".diag__equipment", sec), steps = $$(".dstep", sec), cta = $(".diag__bottom", sec);
-        takeReveal([lead, equip, ...steps]);
-        const unsize = sizesFor([fig], "48vw");
-        const tiles = [fig, equip, lead, ...steps, cta].filter(Boolean);
-        const r0 = track.getBoundingClientRect(), w = r0.width || 1;
-        tiles.forEach((t) => {
-          const col = Math.round(((t.getBoundingClientRect().left - r0.left) / w) * 4);
-          G.fromTo(t, { autoAlpha: 0, y: 44 }, { autoAlpha: 1, y: 0, duration: 1.15, delay: col * 0.09, ease: "expo.out", scrollTrigger: { trigger: t, start: "top 90%", once: true } });
-        });
-        if (img) G.fromTo(img, { scale: 1.16 }, { scale: 1, duration: 2.2, ease: "power2.out", scrollTrigger: { trigger: fig, start: "top 85%", once: true } });
-        if (line) G.timeline({ scrollTrigger: { trigger: fig, start: "top 70%", once: true } })
-          .fromTo(line, { autoAlpha: 0, y: 0 }, { autoAlpha: 1, duration: 0.2 }, 0.4)
-          .to(line, { y: () => fig.clientHeight - 2, duration: 2.2, ease: "sine.inOut" }, 0.4)
-          .to(line, { autoAlpha: 0, duration: 0.3 }, 2.4);
-        return () => { unsize(); };
-      },
     });
   }
-
-  // ----- варианты: directions -----
-  // все направления: общие эффекты вариантов (ими пользуется и directions.m.js — телефон)
-  const directionsFx = (() => {
-    // кнопка «Смотреть все услуги» стала плиткой или строкой оглавления: не тянется за курсором
-    // (магнит общий для всех кнопок, его движение до кнопки просто не доходит, пока вариант включён)
-    const calmMagnet = (sec) => {
-      const box = $(".sec-actions", sec), btn = box && $("[data-magnet]", box);
-      if (!btn) return () => {};
-      const stop = (e) => e.stopPropagation();
-      box.addEventListener("pointermove", stop, true);
-      G.set(btn, { x: 0, y: 0 });
-      return () => box.removeEventListener("pointermove", stop, true);
-    };
-
-    // две ленты навстречу друг другу: первые направления в верхней, остальные в нижней.
-    // Едут, только пока секция на экране; прокрутка разгоняет и разворачивает их, курсор замедляет,
-    // фокус с клавиатуры останавливает ленту и подвигает её так, чтобы ссылка была видна
-    const tapes = (sec, speed) => {
-      const list = $(".dlist", sec), rows = list ? $$(".drow", list) : [];
-      if (rows.length < 2) return () => {};
-      const cut = Math.ceil(rows.length / 2);
-      list.classList.add("dv-tapes");
-      const lanes = [rows.slice(0, cut), rows.slice(cut)].map((set, k) => {
-        const tape = document.createElement("div"), track = document.createElement("div");
-        tape.className = "dv-tape dv-tape--" + (k ? "b" : "a");
-        track.className = "dv-tape__track";
-        tape.appendChild(track);
-        list.appendChild(tape);
-        set.forEach((r) => track.appendChild(r));
-        const clone = (r) => {
-          const c = r.cloneNode(true);
-          c.removeAttribute("data-reveal");
-          c.setAttribute("aria-hidden", "true");
-          c.tabIndex = -1;
-          track.appendChild(c);
-        };
-        const need = Math.max(innerWidth, screen.width || 0) * 1.6 + 200;
-        let guard = 0;
-        while (track.scrollWidth < need && guard++ < 10) set.forEach(clone);
-        [...track.children].forEach(clone);
-        const lane = { tape, track, dir: k ? 1 : -1, pos: k ? 0.37 : 0, half: track.scrollWidth / 2, slow: 1, hover: false, hold: false, focus: false, t: 0, setX: G.quickSetter(track, "x", "px") };
-        const enter = (e) => { if (e.pointerType === "mouse") lane.hover = true; };
-        const leave = (e) => { if (e.pointerType === "mouse") lane.hover = false; };
-        const down = (e) => { if (e.pointerType !== "mouse") { clearTimeout(lane.t); lane.hold = true; } };
-        const up = () => { clearTimeout(lane.t); lane.t = setTimeout(() => (lane.hold = false), 900); };
-        const fin = (e) => {
-          const a = e.target.closest(".drow");
-          if (!a) return;
-          lane.focus = true;
-          const r = a.getBoundingClientRect(), tr = tape.getBoundingClientRect(), pad = Math.max(16, tr.width * 0.06);
-          if (r.left < tr.left + pad || r.right > tr.right - pad) lane.pos = (((lane.pos + (r.left - tr.left - pad) / lane.half) % 1) + 1) % 1;
-        };
-        const fout = () => { lane.focus = false; };
-        const on = [["pointerenter", enter], ["pointerleave", leave], ["pointerdown", down], ["pointerup", up], ["pointercancel", up], ["focusin", fin], ["focusout", fout]];
-        on.forEach(([t, f]) => tape.addEventListener(t, f));
-        lane.off = () => { clearTimeout(lane.t); on.forEach(([t, f]) => tape.removeEventListener(t, f)); };
-        lane.setX(-lane.pos * lane.half);
-        return lane;
-      });
-      let live = false, way = 1, kick = 0;
-      const measure = () => lanes.forEach((l) => { l.half = l.track.scrollWidth / 2 || 1; });
-      ST.create({
-        trigger: sec, start: "top bottom", end: "bottom top",
-        onToggle: (self) => { live = self.isActive; },
-        onUpdate: (self) => { way = self.direction; kick = Math.max(kick, Math.min(Math.abs(self.getVelocity()) / 380, 4)); },
-        onRefresh: measure,
-      });
-      const tick = (time, dt) => {
-        if (!live) return;
-        const s = Math.min(dt, 64) / 1000;
-        kick *= 0.94;
-        lanes.forEach((l) => {
-          const goal = l.focus ? 0 : l.hover || l.hold ? 0.12 : 1;
-          l.slow += (goal - l.slow) * 0.1;
-          l.pos = (((l.pos - l.dir * way * (1 + kick) * l.slow * speed * s / l.half) % 1) + 1) % 1;
-          l.setX(-l.pos * l.half);
-        });
-      };
-      G.ticker.add(tick);
-      return () => {
-        G.ticker.remove(tick);
-        lanes.forEach((l) => { l.off(); l.tape.remove(); });
-        rows.forEach((r) => list.appendChild(r));
-        list.classList.remove("dv-tapes");
-      };
-    };
-
-    // Табло: слова загораются по очереди вслед за прокруткой; латунью то, что загорелось последним
-    // (с трети своего проявления до трети следующего), в конце пути все слова светлые
-    const board = (sec, start, end) => {
-      const list = $(".dlist", sec), labels = $$(".drow__label", sec);
-      if (!list || !labels.length) return;
-      let cur = -1;
-      const mark = (i) => {
-        if (i === cur) return;
-        labels[cur]?.classList.remove("is-cur");
-        cur = i;
-        labels[cur]?.classList.add("is-cur");
-      };
-      const tl = G.timeline({
-        defaults: { ease: "none" },
-        scrollTrigger: {
-          trigger: list, start, end, scrub: true,
-          onUpdate: (self) => mark(self.progress >= 0.999 ? -1 : Math.min(labels.length - 1, Math.floor(self.progress * labels.length - 0.35))),
-        },
-      });
-      labels.forEach((l, i) => tl.fromTo(l, { opacity: 0.2 }, { opacity: 1, duration: 1 }, i));
-      return () => mark(-1);
-    };
-
-    return { calmMagnet, tapes, board };
-  })();
-
-  // все направления, десктоп
-  dvFx("directions", {
-    // Плитки: восьмая плитка — кнопка, она не двигается за курсором
-    1: (sec) => directionsFx.calmMagnet(sec),
-    // Оглавление: сгиб разворота прорисовывается сверху вниз, пока появляются строки
-    2: (sec) => {
-      const off = directionsFx.calmMagnet(sec);
-      G.fromTo(sec, { "--fold": 0 }, { "--fold": 1, ease: "none", scrollTrigger: { trigger: $(".directions__header", sec), start: "bottom 92%", endTrigger: $(".sec-actions", sec), end: "bottom 92%", scrub: true } });
-      return () => { off(); sec.style.removeProperty("--fold"); };
-    },
-    // Табло: слова загораются по очереди, пока набор входит в экран
-    4: (sec) => directionsFx.board(sec, "top 88%", "bottom 74%"),
-    // Бегущая строка: около 54 px в секунду, при прокрутке до пяти раз быстрее
-    5: (sec) => directionsFx.tapes(sec, 54),
-  });
-
-  // ----- варианты: doctors -----
-  // Врачи: в вариантах 1–3 карусели нет. Снимаем с ленты «поток» (повороты карточек) и отмечаем
-  // все карточки текущими: тогда обработчик карусели не перехватывает нажатия, ссылки «О враче»
-  // и кнопки записи работают на любой карточке. Уборка возвращает ленту карусели как была.
-  const dvDocFlat = (sec) => {
-    const grid = $("[data-doctors-carousel]", sec);
-    if (!grid) return () => {};
-    const cards = $$("[data-doctors-card]", grid);
-    const hadFlow = grid.classList.contains("is-flow");
-    grid.classList.remove("is-flow");
-    grid.scrollLeft = 0;
-    cards.forEach((c) => {
-      c.classList.add("is-current");
-      c.style.removeProperty("--d");
-      c.style.removeProperty("--ad");
-    });
-    return () => {
-      cards.forEach((c) => c.classList.remove("is-current"));
-      if (hadFlow) grid.classList.add("is-flow");
-      grid.scrollLeft = 0;
-      // карусель сама перемерит ленту (ResizeObserver) и расставит повороты по событию прокрутки
-      requestAnimationFrame(() => grid.dispatchEvent(new Event("scroll")));
-    };
-  };
-
-  dvFx("doctors", {
-    // 1 · Сетка: только раскладка и наведение (css)
-    1: (sec) => dvDocFlat(sec),
-
-    // 2 · Шахматка: колонки едут с разной скоростью, чётные стоят ниже (тот же сдвиг, что в css)
-    2: (sec) => {
-      const undo = dvDocFlat(sec);
-      const grid = $("[data-doctors-carousel]", sec);
-      const off = () => Math.min(150, innerWidth * 0.09);
-      const amp = [34, 70, 48, 86];
-      $$("[data-doctors-card]", sec).forEach((card, i) => {
-        const col = i % 4, a = amp[col], base = () => (col % 2 ? off() : 0);
-        G.fromTo(card, { y: () => base() + a }, { y: () => base() - a, ease: "none", scrollTrigger: { trigger: grid, start: "top bottom", end: "bottom top", scrub: true, invalidateOnRefresh: true } });
-      });
-      return undo;
-    },
-
-    // 3 · Портрет: главный врач крупно, миниатюры (кнопки «Показать врача …») переключают его
-    3: (sec) => {
-      const undo = dvDocFlat(sec);
-      const cards = $$("[data-doctors-card]", sec);
-      const dots = $$("[data-doctors-dot]", sec);
-      const box = $(".doctors__dots", sec);
-      if (!cards.length || !box) return undo;
-      sec.classList.add("dv-portrait");
-      let cur = -1;
-      const show = (i) => {
-        if (i === cur || !cards[i]) return;
-        cur = i;
-        cards.forEach((c, k) => c.classList.toggle("dv-main", k === i));
-        dots.forEach((d, k) => {
-          d.classList.toggle("dv-on", k === i);
-          d.setAttribute("aria-pressed", String(k === i));
-        });
-      };
-      show(0);
-      const pick = (e) => {
-        const d = e.target.closest("[data-doctors-dot]");
-        if (d) show(dots.indexOf(d));
-      };
-      box.addEventListener("click", pick);
-      box.addEventListener("focusin", pick);
-      return () => {
-        box.removeEventListener("click", pick);
-        box.removeEventListener("focusin", pick);
-        sec.classList.remove("dv-portrait");
-        cards.forEach((c) => c.classList.remove("dv-main"));
-        dots.forEach((d) => { d.classList.remove("dv-on"); d.removeAttribute("aria-pressed"); });
-        undo();
-      };
-    },
-  });
 
   // ----- варианты: faq -----
   // Вопросы, «Две колонки»: вопросы раскладываются в две независимые колонки (открытый вопрос
@@ -1364,56 +959,6 @@
     },
   });
 
-  // ----- варианты: hero -----
-  // первый экран: у каждого варианта своё движение при прокрутке
-  {
-    const heroOut = (sec, tween, start = "top top", end = "bottom top") =>
-      G.to(tween.targets, { ...tween.vars, ease: "none", scrollTrigger: { trigger: sec, start, end, scrub: true } });
-    dvFx("hero", {
-      // Витрина: камера в раме чуть подъезжает, текст уходит вверх и тает
-      1: (sec) => {
-        heroOut(sec, { targets: $(".hero__media picture", sec), vars: { scale: 1.08, yPercent: 4 } });
-        heroOut(sec, { targets: $(".hero__media", sec), vars: { y: -60 } });
-        heroOut(sec, { targets: $(".hero__in", sec), vars: { y: -80, autoAlpha: 0 } }, "40% top", "95% top");
-      },
-      // Манифест: строки заголовка расходятся в стороны, открывая снимок, снимок приближается
-      // (подзаголовок, кнопки и ряд фактов не трогаем: их проявляет первый показ экрана)
-      2: (sec) => {
-        const [l1, l2] = $$(".hero__title-main", sec);
-        heroOut(sec, { targets: l1, vars: { xPercent: -14 } });
-        heroOut(sec, { targets: l2, vars: { xPercent: 22 } });
-        $$(".hero__title-sub", sec).forEach((s) => heroOut(sec, { targets: s, vars: { y: -30, autoAlpha: 0 } }, "10% top", "60% top"));
-        heroOut(sec, { targets: $(".hero__media picture", sec), vars: { scale: 1.12 } });
-        heroOut(sec, { targets: $(".hero__media", sec), vars: { y: -40 } });
-      },
-      // Окно: экран держится, створки вокруг окна разъезжаются, снимок встаёт на своё место
-      3: (sec) => {
-        const media = $(".hero__media", sec), pic = $("picture", media);
-        const shut = ["t", "b", "l", "r"].map((k) => {
-          const i = document.createElement("i");
-          i.className = "hero__shut hero__shut--" + k;
-          i.setAttribute("aria-hidden", "true");
-          media.appendChild(i);
-          return i;
-        });
-        const [t, b, l, r] = shut;
-        const tl = G.timeline({
-          defaults: { ease: "power2.inOut", duration: 1 },
-          scrollTrigger: { trigger: sec, start: "top top", end: "+=85%", pin: true, scrub: true, anticipatePin: 1 },
-        });
-        G.set(pic, { xPercent: -29 });
-        tl.to($(".hero__copy", sec), { autoAlpha: 0, y: -50, duration: 0.35, ease: "power1.in" }, 0)
-          .fromTo(sec, { "--p": 0 }, { "--p": 1 }, 0.08)
-          .to(pic, { xPercent: 0 }, 0.08)
-          .to(t, { yPercent: -100 }, 0.08)
-          .to(b, { yPercent: 100 }, 0.08)
-          .to(l, { xPercent: -100 }, 0.08)
-          .to(r, { xPercent: 100 }, 0.08);
-        return () => { shut.forEach((i) => i.remove()); sec.style.removeProperty("--p"); };
-      },
-    });
-  }
-
   // ----- варианты: ortho -----
   // 04 · ортодонтия: эффекты вариантов (блок, чтобы имена не пересекались с другими секциями)
   {
@@ -1425,26 +970,7 @@
       while (n && n !== host) { x += n.offsetLeft; y += n.offsetTop; n = n.offsetParent; }
       return { x, y, w: el.offsetWidth, h: el.offsetHeight };
     };
-    // широкой полосе нужен крупный снимок: sizes на время варианта «во всю ширину»
-    const wideSizes = (pic) => {
-      const nodes = $$("source, img", pic);
-      const old = nodes.map((n) => n.getAttribute("sizes"));
-      nodes.forEach((n) => n.setAttribute("sizes", "100vw"));
-      return () => nodes.forEach((n, i) => (old[i] == null ? n.removeAttribute("sizes") : n.setAttribute("sizes", old[i])));
-    };
-
     dvFx("ortho", {
-      // «Полотно»: снимок медленно отъезжает, карточка поднимается на полосу.
-      // Масштаб на picture: у img уже свои параллакс и покачивание
-      1: (sec) => {
-        const vis = $(".ortho__visual", sec), pic = $(".ortho__frame picture", sec), body = $(".ortho__body", sec);
-        if (!vis || !pic || !body) return;
-        const restoreSizes = wideSizes(pic);
-        G.fromTo(pic, { scale: 1.14 }, { scale: 1, ease: "none", scrollTrigger: { trigger: vis, start: "top bottom", end: "bottom top", scrub: true } });
-        G.fromTo(body, { y: 110 }, { y: 0, ease: "none", scrollTrigger: { trigger: vis, start: "center bottom", end: "bottom 45%", scrub: true } });
-        return () => { restoreSizes(); G.set([pic, body], { clearProps: "transform" }); };
-      },
-
       // «Витрина»: латунные выноски от пунктов к предметам на снимке прорисовываются при входе
       3: (sec) => {
         const grid = $(".ortho__grid", sec), pic = $(".ortho__frame picture", sec), rows = $$(".orow", sec);
@@ -1507,46 +1033,7 @@
   // ----- варианты: restoration -----
   // 03 · «Восстановление»: эффекты вариантов для десктопа (блок — чтобы имена не пересекались с другими файлами)
   {
-    // общее появление [data-reveal] снимаем с элементов, которыми дальше управляет вариант
-    const takeReveal = (els) => {
-      els = els.filter(Boolean);
-      ST.getAll().forEach((t) => { if (els.includes(t.trigger)) t.kill(); });
-      els.forEach((el) => el.removeAttribute("data-reveal"));
-      G.killTweensOf(els, "opacity,y");
-      G.set(els, { clearProps: "opacity,transform" });
-    };
-
     dvFx("restoration", {
-      // Вкладки: касание, щелчок или фокус на вкладке сменяет случай на сцене (кроссфейд — переходы в CSS)
-      1: (sec) => {
-        const box = $(".resto__cases", sec), cases = $$(".rcase", box);
-        if (!box || !cases.length) return;
-        // вкладка не должна получать transform: снимки сцены позиционированы от ленты, а не от вкладки
-        takeReveal(cases);
-        sec.classList.add("dv-tabs");
-        const set = (c) => cases.forEach((x) => x.classList.toggle("is-active", x === c));
-        set(cases[0]);
-        const offs = cases.map((c, i) => {
-          c.setAttribute("tabindex", "0");
-          const on = () => set(c);
-          const key = (e) => {
-            if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
-            e.preventDefault();
-            cases[(i + (e.key === "ArrowRight" ? 1 : cases.length - 1)) % cases.length].focus();
-          };
-          c.addEventListener("click", on);
-          c.addEventListener("focusin", on);
-          c.addEventListener("keydown", key);
-          return () => { c.removeEventListener("click", on); c.removeEventListener("focusin", on); c.removeEventListener("keydown", key); c.removeAttribute("tabindex"); c.classList.remove("is-active"); };
-        });
-        // заголовки вкладок поднимаются по очереди
-        cases.forEach((c, i) => {
-          const h = $("h3", c);
-          if (h) G.fromTo(h, { autoAlpha: 0, y: 26 }, { autoAlpha: 1, y: 0, duration: 1, delay: i * 0.1, ease: "expo.out", scrollTrigger: { trigger: box, start: "top 86%", once: true } });
-        });
-        return () => { offs.forEach((off) => off()); sec.classList.remove("dv-tabs"); };
-      },
-
       // Три колонки: латунные линии между колонками прорисовываются, когда колонки показались
       2: (sec) => {
         const cases = $$(".rcase", sec);
@@ -1554,30 +1041,6 @@
         sec.classList.add("dv-rules");
         ST.create({ trigger: cases[0], start: "top 78%", once: true, onEnter: () => sec.classList.add("is-drawn") });
         return () => sec.classList.remove("dv-rules", "is-drawn");
-      },
-
-      // Разворот: запись переезжает на левую страницу, вертикальная линия этапов прорисовывается
-      3: (sec) => {
-        const aside = $(".resto__aside", sec), actions = $(".resto__actions", sec), track = $(".workflow__track", sec), wl = $(".workflow__line", sec);
-        if (!aside) return;
-        // элементы внутри липкой страницы: положение для общего появления считалось бы неверно, показываем сразу
-        takeReveal([$(".sec-lead", aside), $(".resto__visual", aside), actions]);
-        const home = actions?.previousElementSibling;
-        if (actions) aside.appendChild(actions);
-        let line = null;
-        if (wl && track) {
-          line = document.createElement("b");
-          line.className = "dv-wline";
-          line.setAttribute("aria-hidden", "true");
-          wl.appendChild(line);
-          // этап загорается, когда его верх доходит до 74 % экрана; передний край линии идёт так же
-          G.fromTo(line, { scaleY: 0 }, { scaleY: 1, ease: "none", scrollTrigger: { trigger: track, start: "top 74%", end: "bottom 74%", scrub: true } });
-        }
-        $$(".rcase__media", sec).forEach((pic) => G.fromTo(pic, { scale: 1.1 }, { scale: 1, ease: "none", scrollTrigger: { trigger: pic, start: "top bottom", end: "top 45%", scrub: true } }));
-        return () => {
-          if (actions && home) home.after(actions);
-          line?.remove();
-        };
       },
     });
   }
@@ -1627,12 +1090,6 @@
       return b;
     };
     dvFx("reviews", {
-      1: (sec) => {
-        // кирпичи поднимаются на место по мере прокрутки; у колонок разный отступ сверху, поэтому и очередь разная
-        $$(".review", sec).forEach((card) => {
-          G.fromTo(card, { y: 64, opacity: 0 }, { y: 0, opacity: 1, ease: "power2.out", scrollTrigger: { trigger: card, start: "top 98%", end: "top 70%", scrub: true } });
-        });
-      },
       2: (sec) => {
         const list = $(".reviews-feed__list", sec), feed = $(".reviews-feed", sec), dotsBox = $(".reviews-feed__dots", sec);
         const cards = $$(".review", list || sec), dots = $$("[data-review-dot]", sec);
@@ -1670,139 +1127,6 @@
           next.remove();
         };
       },
-      3: (sec) => {
-        const undo = [];
-        // лента: кнопки листают по карточке (точки и счётчик ведёт общая логика ленты)
-        const list = $(".reviews-feed__list", sec), status = $(".reviews-feed__status", sec);
-        const cards = $$(".review", list || sec);
-        if (list && status && cards.length > 1) {
-          const prev = rvArrow("prev"), next = rvArrow("next");
-          status.append(prev, next);
-          const step = () => (cards[1].offsetLeft - cards[0].offsetLeft) || list.clientWidth;
-          const sync = () => {
-            prev.disabled = list.scrollLeft <= 4;
-            next.disabled = list.scrollLeft >= list.scrollWidth - list.clientWidth - 4;
-          };
-          const onPrev = () => list.scrollBy({ left: -step(), behavior: "smooth" });
-          const onNext = () => list.scrollBy({ left: step(), behavior: "smooth" });
-          let raf = 0;
-          const onScroll = () => { if (!raf) raf = requestAnimationFrame(() => { raf = 0; sync(); }); };
-          prev.addEventListener("click", onPrev);
-          next.addEventListener("click", onNext);
-          list.addEventListener("scroll", onScroll, { passive: true });
-          const ro = "ResizeObserver" in window ? new ResizeObserver(sync) : null;
-          ro?.observe(list);
-          sync();
-          // карточки выходят из-под нижнего края ленты одна за другой, вслед за оценкой
-          cards.forEach((c, i) => {
-            G.fromTo(c, { y: 90, opacity: 0 }, { y: 0, opacity: 1, ease: "power2.out", scrollTrigger: { trigger: list, start: `top ${92 - i * 7}%`, end: `top ${62 - i * 7}%`, scrub: true } });
-          });
-          undo.push(() => {
-            prev.removeEventListener("click", onPrev);
-            next.removeEventListener("click", onNext);
-            list.removeEventListener("scroll", onScroll);
-            ro?.disconnect();
-            cancelAnimationFrame(raf);
-            prev.remove();
-            next.remove();
-            list.scrollLeft = 0;
-          });
-        }
-        return () => undo.forEach((fn) => fn());
-      },
-    });
-  }
-
-  // ----- варианты: therapy -----
-  // 05 · лечение зубов: эффекты вариантов (блок, чтобы имена не пересекались с другими секциями)
-  {
-    const NS = "http://www.w3.org/2000/svg";
-    const svgEl = (tag, cls, parent) => { const n = document.createElementNS(NS, tag); if (cls) n.setAttribute("class", cls); parent?.appendChild(n); return n; };
-    // положение элемента внутри host без учёта transform (появление карточек не сбивает линии)
-    const offIn = (el, host) => {
-      let x = 0, y = 0, n = el;
-      while (n && n !== host) { x += n.offsetLeft; y += n.offsetTop; n = n.offsetParent; }
-      return { x, y, w: el.offsetWidth, h: el.offsetHeight };
-    };
-    // карточки в порядке разметки: кариес, каналы, гигиена, осмотры — как круги на схеме
-    const cardsOf = (sec) => [...$$(".therapy__cards--top .thcard", sec), ...$$(".therapy__cards--bottom .thcard", sec)];
-
-    dvFx("therapy", {
-      // «Созвездие»: от каждой карточки к её кругу на схеме прорисовывается латунная линия
-      2: (sec) => {
-        const grid = $(".therapy__grid", sec), pic = $(".therapy__visual picture", sec), cards = cardsOf(sec);
-        if (!grid || !pic || cards.length < 4) return;
-        // центры и радиусы кругов на схеме (доли снимка)
-        const circles = [[0.2, 0.197, 0.137], [0.803, 0.197, 0.137], [0.142, 0.52, 0.13], [0.858, 0.52, 0.13]];
-        const svg = svgEl("svg", "dv-stars");
-        svg.setAttribute("aria-hidden", "true");
-        svg.setAttribute("focusable", "false");
-        svg.style.visibility = "hidden";
-        grid.appendChild(svg);
-        const stars = cards.map((card, i) => {
-          const g = svgEl("g", "dv-star dv-star--" + (i + 1), svg);
-          return { card, line: svgEl("line", "dv-star__line", g), ring: svgEl("circle", "dv-star__ring", g), dot: svgEl("circle", "dv-star__dot", g) };
-        });
-        const pts = [];
-        const layout = () => {
-          const W = grid.offsetWidth, H = grid.offsetHeight;
-          svg.setAttribute("width", W);
-          svg.setAttribute("height", H);
-          svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
-          const p = offIn(pic, grid);
-          stars.forEach((s, i) => {
-            const r = offIn(s.card, grid), h = offIn($("h3", s.card) || s.card, grid);
-            const left = r.x + r.w / 2 < p.x + p.w / 2;
-            const x1 = left ? r.x + r.w + 18 : r.x - 18, y1 = h.y + h.h / 2;
-            const [fx, fy, fr] = circles[i];
-            const cx = p.x + p.w * fx, cy = p.y + p.h * fy, rad = p.w * fr;
-            // линия кончается на латунном ободке круга
-            const d = Math.hypot(cx - x1, cy - y1) || 1, k = Math.max(0, d - rad) / d;
-            const x2 = x1 + (cx - x1) * k, y2 = y1 + (cy - y1) * k;
-            s.line.setAttribute("x1", x1); s.line.setAttribute("y1", y1);
-            s.line.setAttribute("x2", x2); s.line.setAttribute("y2", y2);
-            s.dot.setAttribute("cx", x2); s.dot.setAttribute("cy", y2); s.dot.setAttribute("r", 3);
-            s.ring.setAttribute("cx", cx); s.ring.setAttribute("cy", cy); s.ring.setAttribute("r", rad + 6);
-            pts[i] = { x1, y1, x2, y2 };
-          });
-        };
-        let tl = null;
-        const draw = () => {
-          layout();
-          svg.style.visibility = "";
-          tl = G.timeline();
-          stars.forEach((s, i) => {
-            const { x1, y1, x2, y2 } = pts[i];
-            const at = 0.1 + i * 0.16;
-            tl.fromTo(s.line, { scale: 0, svgOrigin: `${x1} ${y1}` }, { scale: 1, svgOrigin: `${x1} ${y1}`, duration: 0.85, ease: "power2.inOut" }, at)
-              .fromTo(s.dot, { scale: 0, svgOrigin: `${x2} ${y2}` }, { scale: 1, svgOrigin: `${x2} ${y2}`, duration: 0.4, ease: "back.out(2.6)" }, at + 0.68);
-          });
-          tl.eventCallback("onComplete", () => G.set(stars.flatMap((s) => [s.line, s.dot]), { clearProps: "transform" }));
-        };
-        ST.create({ trigger: grid, start: "top 55%", end: "max", once: true, onEnter: draw });
-        const onRefresh = () => { if (tl && !tl.isActive()) layout(); };
-        ST.addEventListener("refresh", onRefresh);
-        return () => { ST.removeEventListener("refresh", onRefresh); svg.remove(); };
-      },
-
-      // «Список»: строка, которую сейчас читают (середина экрана), подсвечена, схема приближает её круг
-      3: (sec) => {
-        const cards = cardsOf(sec);
-        const set = (i) => {
-          cards.forEach((c, k) => c.classList.toggle("is-focus", k === i));
-          if (i >= 0) sec.dataset.dvFocus = String(i + 1);
-          else delete sec.dataset.dvFocus;
-        };
-        let cur = -1;
-        cards.forEach((card, i) => ST.create({
-          trigger: card, start: "top 58%", end: "bottom 58%",
-          onToggle: (self) => {
-            if (self.isActive) { cur = i; set(i); }
-            else if (cur === i) { cur = -1; set(-1); }
-          },
-        }));
-        return () => { cards.forEach((c) => c.classList.remove("is-focus")); delete sec.dataset.dvFocus; };
-      },
     });
   }
 
@@ -1839,53 +1163,6 @@
           if (pic) G.fromTo(pic, { scale: 1.16 }, { scale: 1, ease: "none", scrollTrigger: { trigger: deck, start: "top bottom", end: "top 25%", scrub: true } });
         });
         return () => { unsize(); };
-      },
-
-      // Колода: следующая карточка наезжает, предыдущие уменьшаются и темнеют
-      2: (sec) => {
-        const deck = $(".tcards", sec), cards = $$(".tcard", deck);
-        if (!deck || cards.length < 2) return;
-        takeReveal(cards);
-        const unsize = sizesFor(cards, "34vw");
-        const shades = cards.map((c) => { const sh = document.createElement("i"); sh.className = "dv-shade"; sh.setAttribute("aria-hidden", "true"); c.appendChild(sh); return sh; });
-        const n = cards.length;
-        // карточки липкие, поэтому триггер — сама колода (она не липкая), а места карточек считаем по высоте
-        const step = () => cards[0].offsetHeight + (parseFloat(getComputedStyle(deck).rowGap) || 0);
-        const stuck = (i) => parseFloat(getComputedStyle(cards[i]).top) || 0;
-        cards.forEach((c, i) => {
-          const pic = $(".tcard__media picture", c);
-          if (i && pic) G.fromTo(pic, { scale: 1.14 }, { scale: 1, ease: "none", scrollTrigger: { trigger: deck, start: () => `top+=${step() * i} bottom`, end: () => `top+=${step() * i} top+=${stuck(i)}`, scrub: true, invalidateOnRefresh: true } });
-          if (i === n - 1) return;
-          const depth = n - 1 - i;
-          G.timeline({ defaults: { ease: "none" }, scrollTrigger: { trigger: deck, start: () => `top+=${step() * (i + 1)} 88%`, end: () => `top+=${step() * (n - 1)} top+=${stuck(n - 1)}`, scrub: true, invalidateOnRefresh: true } })
-            .fromTo(c, { scale: 1 }, { scale: 1 - 0.045 * depth }, 0)
-            .fromTo(shades[i], { opacity: 0 }, { opacity: 0.1 + 0.13 * depth }, 0);
-        });
-        return () => { unsize(); shades.forEach((sh) => sh.remove()); };
-      },
-
-      // Указатель: пункт под курсором или в фокусе становится активным и остаётся им, кадр сменяется
-      3: (sec) => {
-        const deck = $(".tcards", sec), cards = $$(".tcard", deck);
-        if (!deck || !cards.length) return;
-        // карточка не должна получать transform: иначе общий кадр (он позиционирован от списка) прыгнул бы в неё
-        takeReveal(cards);
-        const unsize = sizesFor(cards, "58vw");
-        sec.classList.add("dv-ix");
-        cards.forEach((c, i) => {
-          const body = $(".tcard__content", c);
-          if (body) G.fromTo(body, { autoAlpha: 0, y: 40 }, { autoAlpha: 1, y: 0, duration: 1.1, delay: i * 0.12, ease: "expo.out", scrollTrigger: { trigger: deck, start: "top 82%", once: true } });
-        });
-        const set = (card) => cards.forEach((c) => c.classList.toggle("is-active", c === card));
-        set(cards[0]);
-        const offs = cards.map((c) => {
-          const on = () => set(c);
-          c.addEventListener("pointerenter", on);
-          c.addEventListener("focusin", on);
-          c.addEventListener("click", on);
-          return () => { c.removeEventListener("pointerenter", on); c.removeEventListener("focusin", on); c.removeEventListener("click", on); };
-        });
-        return () => { offs.forEach((off) => off()); cards.forEach((c) => c.classList.remove("is-active")); sec.classList.remove("dv-ix"); unsize(); };
       },
     });
   }
