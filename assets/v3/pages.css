@@ -1240,3 +1240,91 @@ html.is-accessibility-mode .pg .sec-title, html.is-accessibility-mode .pg .eyebr
   .pfinal__actions { width: 100%; }
   .pfinal__actions .btn { width: 100%; }
 }
+
+/* ===== 40-prices.css ===== */
+/* =========================================================================
+   Прайс-лист (/prices/). Один закреплённый вариант, без панели выбора.
+   Основа — «Цены: Крупно» страницы услуги: засечки в названиях разделов и ценах,
+   тонкие линии между строками. 330 строк читаются на светлом фоне, разделы чередуют
+   слоновую кость и песок; заголовок раздела слева остаётся на месте, пока листаются строки.
+   ========================================================================= */
+
+/* ---------- первый экран ---------- */
+.prc-hero { position: relative; padding: calc(var(--header-h) + clamp(40px, 6vw, 96px)) 0 clamp(56px, 7vw, 112px); background: var(--ivory); color: var(--ink); }
+.prc-hero__grid { display: grid; gap: clamp(36px, 5vw, 80px); }
+.prc-hero__eyebrow { margin-bottom: 18px; color: var(--brass-ink); }
+.prc-hero__title { font: 500 clamp(46px, 6.2vw, 100px)/.95 var(--serif); letter-spacing: -.02em; text-wrap: balance; }
+.prc-hero__title em { display: block; font-style: italic; color: var(--emerald); }
+.prc-hero__lead { max-width: 52ch; margin-top: clamp(22px, 2.4vw, 34px); color: var(--ink-2); font-size: clamp(16.5px, 1.2vw, 19px); line-height: 1.62; }
+.prc-hero__actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: clamp(28px, 3vw, 44px); }
+.prc-hero__cta { --bg: var(--emerald); --fg: var(--ivory); --sweep: var(--moss); }
+.prc-call { display: none; }
+
+.prc-note { position: relative; align-self: end; padding: clamp(30px, 3.2vw, 52px); background: var(--moss); color: var(--on-dark); box-shadow: 0 50px 90px -60px rgba(14, 48, 44, .7); }
+.prc-note::after { content: ""; position: absolute; inset: 8px; border: 1px solid var(--line-brass-dark); pointer-events: none; }
+.prc-note__label { margin-bottom: 16px; color: var(--brass); }
+.prc-note__title { font: 500 clamp(28px, 2.6vw, 40px)/1.08 var(--serif); letter-spacing: -.01em; }
+.prc-note__text { margin-top: 16px; color: var(--on-dark-muted); line-height: 1.6; }
+.prc-note__list { margin: 22px 0 0; padding: 0; list-style: none; border-top: 1px solid var(--line-dark); }
+.prc-note__list li { padding: 13px 0; border-bottom: 1px solid var(--line-dark); font-size: 15.5px; line-height: 1.45; }
+.prc-note__list li::first-letter { text-transform: uppercase; }
+@media (min-width: 1000px) { .prc-hero__grid { grid-template-columns: minmax(0, 1.35fr) minmax(0, .75fr); align-items: end; } }
+@media (max-width: 899px) {
+  .prc-call { display: inline-flex; }
+  .prc-hero__actions .btn { flex: 1 1 100%; }
+}
+
+/* ---------- навигация по разделам ---------- */
+.prc-nav { background: var(--sand); }
+.prc-nav__list { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr)); gap: 10px; }
+.prc-nav__a { display: flex; align-items: center; min-height: clamp(76px, 6.4vw, 96px); padding: 16px clamp(18px, 1.8vw, 26px); background: var(--ivory); color: var(--ink); font: 500 clamp(19px, 1.5vw, 23px)/1.18 var(--serif); transition: background .45s var(--ease), color .45s var(--ease); }
+.prc-nav__a:hover, .prc-nav__a:focus-visible { background: var(--moss); color: var(--brass-2); }
+@media (min-width: 1100px) { .prc-nav__list { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (max-width: 760px) {
+  .prc-nav__list { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .prc-nav__a { min-height: 68px; padding: 12px 14px; font-size: 17.5px; }
+}
+
+/* ---------- разделы ---------- */
+.prc-sec { position: relative; padding: clamp(56px, 7vw, 112px) 0; background: var(--ivory); scroll-margin-top: 24px; }
+.prc-sec:nth-child(even) { background: var(--sand); }
+.prc-anchor { position: absolute; top: 0; }
+.prc-sec__grid { display: grid; gap: clamp(24px, 3vw, 40px); }
+.prc-sec__title { font: 500 clamp(34px, 3.6vw, 58px)/1.02 var(--serif); letter-spacing: -.015em; color: var(--ink); text-wrap: balance; }
+.price-section-title-main { display: block; }
+.price-section-title-note { display: block; margin-top: 8px; font-style: italic; font-size: .62em; color: var(--emerald); }
+.prc-sec__more { max-width: 46ch; margin-top: 18px; color: var(--ink-2); font-size: 15.5px; line-height: 1.6; }
+.prc-sec__more a { color: var(--emerald); font-weight: 500; transition: color .3s; }
+.prc-sec__more a:hover { color: var(--brass-ink); }
+@media (min-width: 1000px) {
+  .prc-sec__grid { grid-template-columns: minmax(0, .78fr) minmax(0, 2fr); column-gap: clamp(40px, 6vw, 110px); align-items: start; }
+  .prc-sec__head { position: sticky; top: calc(var(--header-h) + 40px); }
+}
+
+/* ---------- таблица ---------- */
+.prc-t { width: 100%; border-collapse: collapse; }
+.prc-t thead th { padding: 0 0 14px; font: 500 12.5px/1.2 var(--sans); letter-spacing: .16em; text-transform: uppercase; color: var(--brass-ink); text-align: left; border-bottom: 1px solid var(--line-strong); }
+.prc-t thead th:last-child { text-align: right; }
+.prc-t td { padding: clamp(15px, 1.4vw, 20px) 0; border-bottom: 1px solid var(--line); vertical-align: baseline; }
+.prc-t__svc { padding-right: clamp(20px, 3vw, 56px) !important; color: var(--ink-2); font-size: clamp(15.5px, 1.05vw, 17px); line-height: 1.5; }
+.prc-t__price { text-align: right; white-space: nowrap; }
+.prc-t__price strong { font: 500 clamp(22px, 1.8vw, 28px)/1 var(--serif); color: var(--emerald); font-variant-numeric: lining-nums; }
+.prc-t__label, .prc-t__dash { display: none; }
+@media (hover: hover) and (min-width: 1000px) {
+  .prc-t tbody tr { transition: background .35s var(--ease); }
+  .prc-t tbody tr:hover { background: rgba(14, 48, 44, .045); }
+  .prc-t tbody tr:hover .prc-t__svc { color: var(--ink); }
+}
+@media (max-width: 760px) {
+  .prc-t thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .prc-t, .prc-t tbody, .prc-t tr, .prc-t td { display: block; }
+  .prc-t tr { padding: 16px 0; border-bottom: 1px solid var(--line); }
+  .prc-t tbody tr:first-child { border-top: 1px solid var(--line-strong); }
+  .prc-t td { padding: 0; border: 0; }
+  .prc-t__svc { padding-right: 0 !important; }
+  .prc-t__price { margin-top: 8px; text-align: left; }
+}
+
+/* ---------- запись ---------- */
+.prc-final { background: var(--ivory); border-top: 1px solid var(--line); }
+.prc-final .sec-title { font-size: clamp(40px, 5.4vw, 88px); }

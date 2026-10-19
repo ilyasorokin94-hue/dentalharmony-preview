@@ -326,7 +326,7 @@
   $$("[data-split]").forEach(splitWords);
 
   // первый экран
-  const hero = $(".dhero, .shero");
+  const hero = $(".dhero, .shero, [data-hero]");
   if (hero) {
     const photo = $(".dhero__frame, .shero__media", hero);
     const tl = G.timeline({ delay: 0.05 });
