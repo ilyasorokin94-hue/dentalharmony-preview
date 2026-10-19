@@ -1,0 +1,235 @@
+.implant-hub-page .implant-hub-price {
+  grid-template-columns: minmax(0, 1fr) !important;
+  align-items: start !important;
+  gap: clamp(1.5rem, 2.4vw, 2rem) !important;
+}
+
+.implant-hub-page .implant-hub-price__content {
+  display: grid;
+  align-items: start;
+  align-content: start !important;
+  gap: clamp(2rem, 3.5vw, 3.25rem);
+  max-width: none !important;
+  min-width: 0;
+}
+
+.implant-hub-page .implant-hub-price__summary,
+.implant-hub-page .implant-hub-price__offers {
+  min-width: 0;
+}
+
+.implant-hub-page .implant-hub-price__offers {
+  display: grid;
+  align-content: start;
+}
+
+.implant-hub-page .implant-hub-price__lead,
+.implant-hub-page .implant-hub-price__note {
+  max-width: 68rem;
+}
+
+.implant-hub-page .implant-hub-price__note {
+  margin: 0.85rem 0 0 !important;
+  padding: 0.86rem 1rem;
+  border-left: 3px solid rgba(169, 130, 67, 0.84);
+  border-radius: 0 14px 14px 0;
+  background: rgba(255, 250, 242, 0.58);
+  font-size: 0.94rem !important;
+  line-height: 1.52 !important;
+}
+
+.implant-hub-page .implant-hub-price__list {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.implant-hub-page .implant-hub-price__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 1.25rem;
+  min-width: 0;
+  padding: 0.88rem 1rem;
+  border: 1px solid rgba(169, 130, 67, 0.22);
+  border-radius: 16px;
+  background: rgba(255, 250, 242, 0.74);
+  transition: border-color 0.28s ease, background 0.28s ease, box-shadow 0.28s ease, transform 0.28s ease;
+}
+
+.implant-hub-page .implant-hub-price__row:hover {
+  border-color: rgba(15, 111, 100, 0.3);
+  background: linear-gradient(135deg, rgba(231, 248, 243, 0.42), rgba(255, 250, 242, 0.82));
+  box-shadow: 0 12px 30px rgba(0, 90, 80, 0.07);
+  transform: translateY(-2px);
+}
+
+.implant-hub-page .implant-hub-price__row > div {
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: baseline;
+  gap: 0.14rem;
+  min-width: 0;
+}
+
+.implant-hub-page .implant-hub-price__row strong {
+  min-width: 0;
+  color: #07554d;
+  font-size: 0.96rem;
+  line-height: 1.24;
+}
+
+.implant-hub-page .implant-hub-price__row span {
+  min-width: 0;
+  color: rgba(31, 45, 43, 0.66);
+  font-size: 0.88rem;
+  line-height: 1.35;
+}
+
+.implant-hub-page .implant-hub-price__row b {
+  color: #24312f;
+  font-family: var(--font-serif-display);
+  font-size: clamp(1.3rem, 1.65vw, 1.55rem);
+  font-weight: 400;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.implant-hub-page .implant-hub-price__row--accent {
+  border-color: rgba(15, 111, 100, 0.24);
+  background: linear-gradient(135deg, rgba(231, 248, 243, 0.64), rgba(255, 250, 242, 0.8));
+}
+
+@media (min-width: 1001px) {
+  .implant-hub-page .implant-hub-price__content {
+    grid-template-columns: minmax(0, 0.86fr) minmax(27rem, 1.14fr);
+  }
+}
+
+@media (max-width: 780px) {
+  .implant-hub-page .implant-hub-price {
+    gap: 1.25rem !important;
+  }
+
+  .implant-hub-page .implant-hub-price__content {
+    gap: 1.25rem;
+  }
+
+  .implant-hub-page .implant-hub-price__note {
+    padding: 0.75rem 0.82rem;
+    font-size: 0.9rem !important;
+  }
+
+  .implant-hub-page .implant-hub-price__list {
+    gap: 0.5rem;
+  }
+
+  .implant-hub-page .implant-hub-price__row {
+    padding: 0.78rem 0.82rem;
+    border-radius: 14px;
+  }
+
+  .implant-hub-page .implant-hub-price__row b {
+    font-size: 1.32rem;
+  }
+}
+
+@media (max-width: 620px) {
+  .implant-hub-page .implant-hub-price__row {
+    grid-template-columns: 1fr;
+    gap: 0.55rem;
+  }
+}
+
+@media (max-width: 335px) {
+  html {
+    min-width: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .implant-hub-page .implant-hub-price__row {
+    transition: none;
+  }
+}
+
+/* Therapy hub: fit the portrait-oriented transparent hero asset into the shared hub grid. */
+.implant-hub-page[data-astro-cid-o3bxrwav] {
+  --service-hero-media-width: 33rem;
+  --service-hero-card-ratio: 1 / 1;
+  --service-hero-image-fit: contain;
+  --service-hero-image-position: center;
+}
+
+.implant-hub-page[data-astro-cid-o3bxrwav] .implant-hub-hero__visual[data-astro-cid-o3bxrwav] {
+  width: 100%;
+  max-width: 33rem;
+  aspect-ratio: 1 / 1;
+  align-self: center;
+  justify-self: end;
+}
+
+.implant-hub-page[data-astro-cid-o3bxrwav] .implant-hub-hero__visual[data-astro-cid-o3bxrwav] img[data-astro-cid-o3bxrwav] {
+  object-fit: contain;
+  object-position: center;
+  transform: none;
+}
+
+@media (min-width: 1001px) and (max-width: 1200px) {
+  .implant-hub-page[data-astro-cid-o3bxrwav] .implant-hub-hero__grid[data-astro-cid-o3bxrwav] {
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr) !important;
+    gap: clamp(2.5rem, 4vw, 3.25rem);
+  }
+
+  .implant-hub-page[data-astro-cid-o3bxrwav] .implant-hub-hero__visual[data-astro-cid-o3bxrwav] {
+    max-width: 31rem;
+  }
+}
+
+@media (min-width: 1001px) {
+  .implant-hub-page section[aria-labelledby="implant-indications-title"] .implant-hub-section__head {
+    max-width: 54rem;
+  }
+}
+
+@media (max-width: 1000px) {
+  .implant-hub-page[data-astro-cid-o3bxrwav] .implant-hub-hero[data-astro-cid-o3bxrwav] {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .implant-hub-page[data-astro-cid-o3bxrwav] .implant-hub-hero__grid[data-astro-cid-o3bxrwav] {
+    display: contents;
+  }
+
+  .implant-hub-page[data-astro-cid-o3bxrwav] .implant-hub-hero__content[data-astro-cid-o3bxrwav] {
+    order: 1;
+    width: min(760px, calc(100% - 2.5rem));
+    margin-inline: auto;
+  }
+
+  .implant-hub-page[data-astro-cid-o3bxrwav] .implant-hub-hero[data-astro-cid-o3bxrwav] > .implant-hub-disclaimer[data-astro-cid-o3bxrwav] {
+    order: 2;
+    width: min(760px, calc(100% - 2.5rem));
+    margin: 1rem auto 0;
+    text-align: left;
+  }
+
+  .implant-hub-page[data-astro-cid-o3bxrwav] .implant-hub-hero__visual[data-astro-cid-o3bxrwav] {
+    order: 3;
+    width: min(32rem, calc(100% - 2.5rem)) !important;
+    aspect-ratio: 1 / 1 !important;
+    margin: clamp(1.25rem, 4vw, 1.75rem) auto 0;
+    justify-self: auto;
+  }
+}
+
+@media (max-width: 620px) {
+  .implant-hub-page[data-astro-cid-o3bxrwav] .implant-hub-hero__content[data-astro-cid-o3bxrwav],
+  .implant-hub-page[data-astro-cid-o3bxrwav] .implant-hub-hero[data-astro-cid-o3bxrwav] > .implant-hub-disclaimer[data-astro-cid-o3bxrwav] {
+    width: calc(100% - 1.25rem);
+  }
+
+  .implant-hub-page[data-astro-cid-o3bxrwav] .implant-hub-hero__visual[data-astro-cid-o3bxrwav] {
+    width: calc(100% - 1.25rem) !important;
+  }
+}

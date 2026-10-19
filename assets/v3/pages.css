@@ -1415,3 +1415,116 @@ html.is-accessibility-mode .pg .sec-title, html.is-accessibility-mode .pg .eyebr
 /* ---------- запись ---------- */
 .cat-final { background: var(--ivory); border-top: 1px solid var(--line); }
 .cat-final .sec-title { font-size: clamp(40px, 5.4vw, 88px); }
+
+/* ===== 60-services.css ===== */
+/* =========================================================================
+   Остальные страницы услуг (pages/gen/gen_services.py). Блоки — те же, что на образце
+   «Имплантация»; здесь только то, чего на образце не было: другое число пунктов,
+   описания у пунктов, сноски, соседние блоки одного цвета.
+   ========================================================================= */
+
+/* соседние блоки одного цвета получают соседний тон той же гаммы (тёмный к тёмному, светлый к светлому) */
+@media (min-width: 1100px) {
+  section[data-tone-d="moss"][data-v][data-vkey] { background: var(--moss); }
+  section[data-tone-d="moss-2"][data-v][data-vkey] { background: var(--moss-2); }
+  section[data-tone-d="ivory"][data-v][data-vkey] { background: var(--ivory); }
+  section[data-tone-d="sand"][data-v][data-vkey] { background: var(--sand); }
+}
+@media (max-width: 1099px) {
+  section[data-tone-m="moss"][data-v][data-vkey] { background: var(--moss); }
+  section[data-tone-m="moss-2"][data-v][data-vkey] { background: var(--moss-2); }
+  section[data-tone-m="ivory"][data-v][data-vkey] { background: var(--ivory); }
+  section[data-tone-m="sand"][data-v][data-vkey] { background: var(--sand); }
+}
+
+/* сноска под блоком */
+.snote { max-width: 72ch; margin-top: clamp(24px, 2.6vw, 38px); color: var(--ink-2); font-size: 15.5px; line-height: 1.6; }
+.snote a { color: var(--emerald); font-weight: 500; }
+:is([data-dark~="1"][data-v="1"], [data-dark~="2"][data-v="2"], [data-dark~="3"][data-v="3"]) .snote { color: var(--on-dark-muted); }
+:is([data-dark~="1"][data-v="1"], [data-dark~="2"][data-v="2"], [data-dark~="3"][data-v="3"]) .snote a { color: var(--brass-2); }
+
+/* плитки: три пункта в ряд, плитка-ссылка */
+@media (min-width: 1100px) { .sind[data-v="1"] .sind__list[data-count="3"], .sind[data-v="3"] .sind__list[data-count="3"] { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.sind__item--link { color: inherit; transition: background .45s var(--ease); }
+.sind[data-v="1"] .sind__item--link:hover { background: var(--ivory-2); }
+.sind__item--link h3 { transition: color .35s; }
+.sind__item--link:hover h3 { color: var(--emerald); }
+
+/* сравнение из двух колонок */
+@media (min-width: 900px) {
+  .sopt[data-v="3"] .sopt__list[data-count="2"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .sopt[data-v="3"] .sopt__list[data-count="2"] .sopt__item { padding-inline: clamp(28px, 3.4vw, 56px); }
+  .sopt[data-v="3"] .sopt__list[data-count="2"] .sopt__item:first-child { padding-left: 0; }
+}
+.sopt__list[data-count="2"] .sopt__points { max-width: 520px; }
+
+/* этапы «Ступени»: три, пять или шесть этапов */
+@media (min-width: 900px) {
+  .spath[data-v="3"] .spath__list:not([data-count="4"]) .spath__item:nth-child(4) { background: var(--moss); box-shadow: inset 0 0 0 1px var(--line-brass-dark); }
+  .spath[data-v="3"] .spath__list:not([data-count="4"]) .spath__item:nth-child(4) h3 { color: var(--brass-2); }
+  .spath[data-v="3"] .spath__list:not([data-count="4"]) .spath__item:nth-child(4) p { color: var(--on-dark-muted); }
+  .spath[data-v="3"] .spath__list:not([data-count="4"]) .spath__item:last-child { background: var(--brass); box-shadow: none; }
+  .spath[data-v="3"] .spath__list:not([data-count="4"]) .spath__item:last-child h3 { color: var(--moss-2); }
+  .spath[data-v="3"] .spath__list:not([data-count="4"]) .spath__item:last-child p { color: rgba(10, 38, 34, .78); }
+  .spath[data-v="3"] .spath__list:is([data-count="3"], [data-count="5"], [data-count="6"]) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .spath[data-v="3"] .spath__list:is([data-count="5"], [data-count="6"]) .spath__item:nth-child(1) { min-height: clamp(200px, 16vw, 240px); }
+  .spath[data-v="3"] .spath__list:is([data-count="5"], [data-count="6"]) .spath__item:nth-child(2) { min-height: clamp(225px, 18vw, 270px); }
+  .spath[data-v="3"] .spath__list:is([data-count="5"], [data-count="6"]) .spath__item:nth-child(3) { min-height: clamp(250px, 20vw, 300px); }
+  .spath[data-v="3"] .spath__list:is([data-count="5"], [data-count="6"]) .spath__item:nth-child(4) { min-height: clamp(275px, 22vw, 330px); }
+  .spath[data-v="3"] .spath__list:is([data-count="5"], [data-count="6"]) .spath__item:nth-child(5) { min-height: clamp(300px, 24vw, 360px); }
+  .spath[data-v="3"] .spath__list:is([data-count="5"], [data-count="6"]) .spath__item:nth-child(6) { min-height: clamp(325px, 26vw, 390px); }
+  /* второй ряд продолжает подъём первого */
+  .spath[data-v="3"] .spath__list:is([data-count="5"], [data-count="6"]) .spath__item:nth-child(n+4) { margin-top: clamp(4px, .6vw, 8px); }
+}
+@media (max-width: 899px) {
+  .spath[data-v="3"] .spath__list:not([data-count="4"]) .spath__item:nth-child(n+2) { margin-left: 0; }
+}
+/* «Линия» на планшете: больше четырёх этапов — вертикальная линия, как на телефоне */
+@media (min-width: 900px) and (max-width: 1099px) {
+  .spath[data-v="1"] .spath__list:not([data-count="4"]):not([data-count="3"]) { grid-template-columns: 1fr; gap: 36px; }
+  .spath[data-v="1"] .spath__list:not([data-count="4"]):not([data-count="3"]) .spath__item { padding: 0 0 0 40px; }
+  .spath[data-v="1"] .spath__list:not([data-count="4"]):not([data-count="3"]) .spath__item::before { top: 8px; left: 0; }
+  .spath[data-v="1"] .spath__list:not([data-count="4"]):not([data-count="3"]) .spath__item::after { top: 14px; bottom: -50px; left: 6px; right: auto; width: 1px; height: auto; background: var(--line-brass); }
+  .spath[data-v="1"] .spath__list:not([data-count="4"]):not([data-count="3"]) .spath__item:last-child::after { display: none; }
+}
+@media (min-width: 900px) { .spath[data-v="1"] .spath__list[data-count="3"] { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+/* «Что учитывает врач» крупно, с пояснением под пунктом */
+.sfac__item p { max-width: 54ch; margin: 8px auto 0; font-size: 15.5px; line-height: 1.55; }
+.sfac[data-v="3"] .sfac__item p { color: var(--on-dark-muted); }
+.sfac[data-v="3"] .sfac__list:has(p) { gap: clamp(20px, 2.2vw, 32px); }
+.sfac[data-v="3"] .sfac__list:has(p) .sfac__item h3 { font-size: clamp(28px, 3.4vw, 52px); }
+.sfac[data-v="3"] .snote { margin-inline: auto; }
+
+/* цены: строка без цены — с переходом на страницу */
+.sprice__row--text .sprice__name span { max-width: 62ch; }
+.sprice__go { flex: none; display: inline-flex; align-items: center; min-height: 46px; padding: 0 22px; border-radius: 999px; box-shadow: inset 0 0 0 1px var(--line-brass-dark); color: var(--brass-2); font: 500 15px/1.2 var(--sans); white-space: nowrap; transition: background .35s, color .35s, box-shadow .35s; }
+.sprice__go:hover, .sprice__go:focus-visible { background: var(--brass); color: var(--moss-2); box-shadow: none; }
+.sprice[data-v="3"] .sprice__row--text .sprice__name strong { font-size: clamp(26px, 2.8vw, 42px); }
+.sprice[data-v="3"] .sprice__summary + .sprice__aside { margin-top: clamp(36px, 3.6vw, 56px); }
+@media (max-width: 760px) { .sprice__go { white-space: normal; } }
+
+/* цены: заголовок строки как в прайсе (h3), длинные названия, тарифы по группам */
+.sprice__name h3 { font: 500 clamp(21px, 1.7vw, 26px)/1.15 var(--serif); }
+.sprice[data-v="3"] .sprice__name h3 { font-size: clamp(28px, 3.4vw, 54px); }
+.sprice[data-v="3"] .sprice__row--accent .sprice__name h3 { font-style: italic; color: var(--brass-2); }
+.sprice[data-v="3"] .sprice__list[data-long] .sprice__name :is(strong, h3) { font-size: clamp(22px, 2vw, 32px); line-height: 1.2; }
+.sprice[data-v="3"] .sprice__list[data-long] .sprice__cost { font-size: clamp(26px, 2.6vw, 42px); }
+.sprice__tariffs { margin-top: clamp(48px, 5vw, 80px); }
+.sprice__tariffs > .sprice__note { max-width: 72ch; }
+.sprice__groups { display: grid; gap: clamp(28px, 3vw, 48px); margin-top: clamp(24px, 2.6vw, 36px); }
+@media (min-width: 900px) { .sprice__groups { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: clamp(32px, 5vw, 88px); } }
+.sprice__gtitle { font: 500 clamp(26px, 2.4vw, 38px)/1.1 var(--serif); font-style: italic; }
+.sprice[data-v="3"] .sprice__gtitle { color: var(--brass-2); }
+.sprice[data-v="3"] .sprice__group .sprice__list { margin-top: 14px; }
+.sprice[data-v="3"] .sprice__group .sprice__name strong { font-size: clamp(19px, 1.5vw, 23px); font-family: var(--sans); font-weight: 400; }
+.sprice[data-v="3"] .sprice__group .sprice__cost { font-size: clamp(22px, 2vw, 30px); }
+.sprice[data-v="3"] .sprice__group .sprice__row { padding: 14px 0; }
+@media (max-width: 760px) { .sprice[data-v="3"] .sprice__group .sprice__row { flex-direction: row; } }
+.sprice__src { margin-top: 18px; }
+
+/* врачи: двое или один */
+@media (min-width: 900px) {
+  .steam[data-v="2"] .steam__list[data-count="2"] { grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 900px; margin-inline: auto; }
+  .steam[data-v="2"] .steam__list[data-count="1"] { grid-template-columns: minmax(0, 1fr); max-width: 460px; margin-inline: auto; }
+}
