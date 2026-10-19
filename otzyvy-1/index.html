@@ -138,11 +138,20 @@
 <!-- DH_YANDEX_HASH_FIX_END -->
 <style>
 .rv-eyebrow{margin-bottom:18px}
-.review--theme h3{font-size:clamp(26px,2.4vw,36px)}
 .review--theme .review__footer{grid-template-columns:1fr}
 .review--theme .review__footer small{display:block;margin-top:4px}
-.rv-note{margin-top:22px;max-width:56ch;font-size:14px;line-height:1.55;color:var(--muted)}
-@media (min-width:900px){.rv-note{margin-top:28px}}
+.rv-note{margin-top:22px;max-width:60ch;font-size:14px;line-height:1.55;color:var(--muted)}
+@media (min-width:1100px){
+ .reviews[data-dv="2"] .reviews-feed.rv-themes{display:block;padding-left:0}
+ .reviews[data-dv="2"] .reviews-feed.rv-themes::before{display:none}
+ .reviews[data-dv="2"] .rv-themes .reviews-feed__list,.reviews[data-dv="2"] .rv-themes .reviews-feed__list.is-quote{grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(28px,3vw,48px)}
+ .reviews[data-dv="2"] .rv-themes .is-quote .review,.reviews[data-dv="2"] .rv-themes .review{grid-area:auto;opacity:1;visibility:visible;padding-top:26px;border-top:1px solid var(--line-strong)}
+ .reviews[data-dv="2"] .rv-themes .is-quote .review>*{transform:none}
+ .reviews[data-dv="2"] .rv-themes .review h3{font:500 clamp(28px,2.3vw,36px)/1.1 var(--serif);font-style:normal}
+ .reviews[data-dv="2"] .rv-themes .review:nth-child(n) .review__footer{grid-template-columns:1fr}
+ .reviews[data-dv="2"] .rv-themes .reviews-feed__status,.reviews[data-dv="2"] .rv-themes .rv-nav{display:none!important}
+ .rv-note{margin-top:36px}
+}
 </style>
 </head>
 <body>
@@ -1182,7 +1191,7 @@
 </p>
 </div>
 </aside>
-<div class="reviews-feed">
+<div class="reviews-feed rv-themes">
 <p class="eyebrow rv-eyebrow" data-reveal>Что пациенты отмечают в отзывах</p>
 <div class="reviews-feed__list" aria-label="Что пациенты отмечают в отзывах" data-review-carousel>
 <article class="review review--theme" data-review-card data-review-index="0">
