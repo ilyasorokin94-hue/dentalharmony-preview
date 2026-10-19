@@ -1634,3 +1634,135 @@ html.is-accessibility-mode .pg .sec-title, html.is-accessibility-mode .pg .eyebr
 .lg-doc .dh-legal-pending__item { padding: 18px 22px; background: var(--sand); }
 .lg-doc .dh-legal-pending__label { font: 500 12px/1.3 var(--sans); letter-spacing: .16em; text-transform: uppercase; color: var(--brass-ink); }
 .lg-doc .dh-legal-pending__title { display: block; margin-top: 6px; color: var(--ink); font: 500 20px/1.25 var(--serif); }
+
+/* ===== 80-blog.css ===== */
+/* =========================================================================
+   Блог (pages/gen/gen_blog.py): список статей, статья, «Спасибо», 404.
+   Разметка текста статьи — с живой страницы (классы blog-*), здесь только оформление.
+   ========================================================================= */
+
+/* ---------- первый экран статьи: «Светлый разворот» страниц услуг, кегль под длинный заголовок ---------- */
+.shero[data-v="2"] .bl-hero__title { font-size: clamp(40px, 4.3vw, 70px); line-height: 1; letter-spacing: -.015em; }
+.bl-hero__lead p { margin: 0; }
+.bl-hero__lead p + p { margin-top: 12px; }
+.bl-meta { display: flex; flex-wrap: wrap; gap: 8px 22px; margin-top: clamp(20px, 2vw, 28px); padding-top: 18px; border-top: 1px solid var(--line); color: var(--muted); font: 500 14px/1.4 var(--sans); letter-spacing: .02em; }
+@media (max-width: 1099px) { .shero[data-v="2"] .bl-hero__title { font-size: clamp(34px, 8.6vw, 54px); } }
+
+/* ---------- тело статьи ---------- */
+.bl-body { padding: clamp(56px, 7vw, 120px) 0 clamp(72px, 8vw, 140px); background: var(--ivory); color: var(--ink); }
+.bl-page .blog-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: clamp(28px, 3vw, 44px); }
+@media (min-width: 1100px) {
+  .bl-page .blog-grid { grid-template-columns: minmax(0, 320px) minmax(0, 1fr); grid-template-rows: auto 1fr; column-gap: clamp(56px, 6vw, 112px); align-items: start; }
+  .bl-page .blog-summary { grid-column: 1; grid-row: 1; }
+  .bl-page .blog-toc { grid-column: 1; grid-row: 2; position: sticky; top: calc(var(--header-h) + 28px); }
+  .bl-page .blog-content { grid-column: 2; grid-row: 1 / span 2; }
+}
+
+/* «Коротко» — песочная карточка; «В этой статье» — список строк без нумерации */
+.bl-page .blog-summary { padding: clamp(24px, 2.4vw, 34px); background: var(--sand); box-shadow: inset 0 0 0 1px var(--line-brass); }
+.bl-page .blog-summary h2, .bl-page .blog-toc h2 { margin: 0 0 16px; font: 500 12.5px/1.3 var(--sans); letter-spacing: .16em; text-transform: uppercase; color: var(--brass-ink); }
+.bl-page .blog-summary ul { display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; }
+.bl-page .blog-summary li { position: relative; padding-left: 20px; font-size: 15.5px; line-height: 1.55; color: var(--ink-2); }
+.bl-page .blog-summary li::before { content: ""; position: absolute; left: 0; top: .62em; width: 7px; height: 7px; border-radius: 50%; background: var(--brass); }
+.bl-page .blog-toc ol { margin: 0; padding: 0; list-style: none; border-bottom: 1px solid var(--line); }
+.bl-page .blog-toc li { border-top: 1px solid var(--line); }
+.bl-page .blog-toc a { display: block; padding: 11px 0; font-size: 15px; line-height: 1.4; color: var(--ink-2); transition: color .3s, padding .4s var(--ease); }
+.bl-page .blog-toc a:hover, .bl-page .blog-toc a:focus-visible { color: var(--emerald); padding-left: 6px; }
+
+/* текст */
+.bl-page .blog-content { max-width: 780px; }
+.bl-page .blog-content > section { scroll-margin-top: calc(var(--header-h) + 24px); }
+.bl-page .blog-content > section + section { margin-top: clamp(48px, 5vw, 76px); padding-top: clamp(40px, 4vw, 60px); border-top: 1px solid var(--line); }
+.bl-page .blog-content h2 { margin: 0 0 clamp(18px, 2vw, 26px); font: 500 clamp(30px, 3vw, 46px)/1.08 var(--serif); letter-spacing: -.01em; scroll-margin-top: calc(var(--header-h) + 24px); }
+.bl-page .blog-content :is(h3, .h3) { margin: clamp(28px, 2.6vw, 38px) 0 10px; font: 500 clamp(22px, 1.8vw, 28px)/1.2 var(--serif); }
+.bl-page .blog-content p { margin: 0 0 16px; font-size: 17px; line-height: 1.72; color: var(--ink-2); }
+.bl-page .blog-content p:last-child { margin-bottom: 0; }
+.bl-page .blog-content a:not(.btn) { color: var(--emerald); font-weight: 500; transition: color .3s; }
+.bl-page .blog-content a:not(.btn):hover { color: var(--moss); }
+.bl-page .blog-content strong { color: var(--ink); font-weight: 600; }
+.bl-page .blog-content ul, .bl-page .blog-content ol { display: grid; gap: 10px; margin: 0 0 18px; padding: 0; list-style: none; }
+.bl-page .blog-content li { position: relative; padding-left: 26px; font-size: 17px; line-height: 1.65; color: var(--ink-2); }
+.bl-page .blog-content ul > li::before { content: ""; position: absolute; left: 4px; top: .7em; width: 7px; height: 7px; border-radius: 50%; background: var(--brass); }
+.bl-page .blog-content ol { counter-reset: bl; }
+.bl-page .blog-content ol > li { counter-increment: bl; }
+.bl-page .blog-content ol > li::before { content: counter(bl) "."; position: absolute; left: 0; top: 0; color: var(--brass-ink); font-weight: 600; }
+
+/* таблица */
+.bl-page .blog-table-wrap { margin: 24px 0; overflow-x: auto; }
+.bl-page .blog-content table { width: 100%; border-collapse: collapse; font-size: 15.5px; line-height: 1.5; }
+@media (max-width: 640px) { .bl-page .blog-content table { font-size: 14.5px; } .bl-page .blog-content :is(th, td) { padding: 12px; } }
+.bl-page .blog-content caption { margin-bottom: 12px; text-align: left; font: italic 500 clamp(19px, 1.5vw, 22px)/1.3 var(--serif); color: var(--ink); }
+.bl-page .blog-content th { padding: 14px 18px; background: var(--moss); color: var(--on-dark); text-align: left; font-weight: 500; }
+.bl-page .blog-content td { padding: 14px 18px; border-bottom: 1px solid var(--line); color: var(--ink-2); vertical-align: top; }
+.bl-page .blog-content tbody tr:nth-child(even) td { background: rgba(203, 176, 122, .08); }
+.bl-page .blog-content td:first-child { color: var(--ink); font-weight: 500; }
+
+/* врач */
+.bl-page .blog-doctor-card { display: grid; gap: clamp(20px, 2.4vw, 36px); margin-top: 28px; padding: clamp(18px, 2vw, 24px); background: var(--sand); box-shadow: inset 0 0 0 1px var(--line-brass); }
+@media (min-width: 640px) { .bl-page .blog-doctor-card { grid-template-columns: minmax(0, 220px) minmax(0, 1fr); align-items: center; } }
+.bl-page .blog-doctor-photo { aspect-ratio: 4 / 5; overflow: hidden; background: var(--ivory-2); }
+.bl-page .blog-doctor-photo img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 12%; }
+.bl-page .blog-doctor-copy :is(h3, .h3) { margin: 0 0 6px; }
+.bl-page .blog-doctor-copy p { margin: 0 0 6px; font-size: 15.5px; }
+.bl-page .blog-doctor-specialty { color: var(--brass-ink) !important; font-weight: 500; }
+.bl-page .blog-doctor-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+
+/* частые вопросы */
+.bl-page .blog-faq-list { border-bottom: 1px solid var(--line); }
+.bl-page .blog-faq-list details { border-top: 1px solid var(--line); }
+.bl-page .blog-faq-list summary { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: clamp(18px, 1.8vw, 24px) 0; cursor: pointer; list-style: none; font: 500 clamp(19px, 1.5vw, 23px)/1.3 var(--serif); }
+.bl-page .blog-faq-list summary::-webkit-details-marker { display: none; }
+.bl-page .blog-faq-list summary > span[aria-hidden] { flex: none; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; box-shadow: inset 0 0 0 1px var(--line-brass); font: 400 20px/1 var(--sans); color: var(--brass-ink); transition: transform .45s var(--ease), background .3s; }
+.bl-page .blog-faq-list details[open] summary > span[aria-hidden] { transform: rotate(45deg); background: var(--sand); }
+.bl-page .blog-faq-answer { padding-bottom: clamp(18px, 1.8vw, 24px); }
+
+/* запись в конце статьи — тёмная полоса */
+.bl-page .blog-cta { margin-top: clamp(56px, 6vw, 88px); padding: clamp(32px, 4vw, 56px); background: var(--moss); color: var(--on-dark); box-shadow: inset 0 0 0 1px var(--line-brass-dark); }
+.bl-page .blog-content .blog-cta h2 { color: var(--on-dark); }
+.bl-page .blog-content .blog-cta p { max-width: 56ch; margin-bottom: 26px; color: var(--on-dark-muted); }
+.bl-page .blog-cta .btn { --bg: var(--brass); --fg: var(--moss-2); --sweep: var(--brass-2); }
+.bl-page .blog-content > .blog-cta + section, .bl-page .blog-content > .blog-related { border-top: 0; }
+
+/* связанные услуги */
+.bl-page .blog-related { margin-top: clamp(48px, 5vw, 72px); }
+.bl-page .blog-related p { margin: 0; padding: 16px 0; border-top: 1px solid var(--line); }
+.bl-page .blog-related p:last-child { border-bottom: 1px solid var(--line); }
+.bl-page .blog-related a { font: 500 clamp(20px, 1.6vw, 24px)/1.3 var(--serif); }
+
+/* ---------- список статей ---------- */
+.bl-list .blog-filters { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: clamp(32px, 3.4vw, 52px); }
+.bl-list .blog-filters[hidden] { display: none; }
+.bl-list .blog-filters button { min-height: 44px; padding: 0 20px; border: 0; border-radius: 999px; background: transparent; box-shadow: inset 0 0 0 1px var(--line-strong); color: var(--ink); font: 500 15px/1 var(--sans); cursor: pointer; transition: background .3s, color .3s, box-shadow .3s; }
+.bl-list .blog-filters button:hover { box-shadow: inset 0 0 0 1px var(--emerald); }
+.bl-list .blog-filters button[aria-pressed="true"] { background: var(--moss); color: var(--on-dark); box-shadow: none; }
+.bl-list .blog-posts { display: grid; gap: clamp(28px, 3vw, 44px); }
+@media (min-width: 760px) { .bl-list .blog-posts { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1100px) { .bl-list .blog-posts { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.bl-list .blog-post-card { position: relative; display: flex; flex-direction: column; background: var(--sand); box-shadow: inset 0 0 0 1px var(--line-brass); transition: box-shadow .4s var(--ease), transform .5s var(--ease); }
+.bl-list .blog-post-card[hidden] { display: none; }
+.bl-list .blog-post-card:hover { transform: translateY(-4px); box-shadow: inset 0 0 0 1px var(--brass), 0 30px 60px -40px rgba(14, 48, 44, .5); }
+.bl-list .blog-card-media { aspect-ratio: 1 / 1; overflow: hidden; background: var(--moss); }
+.bl-list .blog-card-media img { width: 100%; height: 100%; object-fit: cover; transition: transform .9s var(--ease); }
+.bl-list .blog-post-card:hover .blog-card-media img { transform: scale(1.04); }
+.bl-list .blog-card-copy { display: flex; flex: 1; flex-direction: column; padding: clamp(22px, 2.2vw, 30px); }
+.bl-list .blog-card-copy .single-implant-eyebrow { margin: 0 0 12px; font: 500 12.5px/1.3 var(--sans); letter-spacing: .16em; text-transform: uppercase; color: var(--brass-ink); }
+.bl-list .blog-card-copy h2 { margin: 0 0 14px; font: 500 clamp(23px, 1.9vw, 29px)/1.15 var(--serif); }
+.bl-list .blog-card-copy h2 a::after { content: ""; position: absolute; inset: 0; }
+.bl-list .blog-card-meta { display: flex; flex-wrap: wrap; gap: 4px 18px; margin: 0 0 12px; color: var(--muted); font: 500 13.5px/1.4 var(--sans); }
+.bl-list .blog-card-excerpt { margin: 0 0 22px; font-size: 15.5px; line-height: 1.6; color: var(--ink-2); }
+.bl-list .blog-card-link { margin-top: auto; align-self: flex-start; display: inline-flex; align-items: center; min-height: 44px; padding: 0 22px; border-radius: 999px; box-shadow: inset 0 0 0 1px var(--line-strong); font: 500 15px/1 var(--sans); transition: background .35s, color .35s; }
+.bl-list .blog-post-card:hover .blog-card-link { background: var(--moss); color: var(--on-dark); box-shadow: none; }
+
+/* ---------- «Спасибо» и 404: одна карточка на тёмном фоне ---------- */
+.bl-note { position: relative; isolation: isolate; display: flex; align-items: center; min-height: max(620px, 100svh); padding: calc(var(--header-h) + 48px) 0 64px; background: var(--moss-2); color: var(--on-dark); text-align: center; }
+.bl-note__bg { position: absolute; inset: 0; z-index: -1; background: radial-gradient(60% 60% at 50% 40%, rgba(203, 176, 122, .16), transparent 70%); }
+.bl-note__card { max-width: 720px; margin-inline: auto; }
+.bl-note__card > p:first-child { margin: 0 0 18px; font: 500 12.5px/1.3 var(--sans); letter-spacing: .18em; text-transform: uppercase; color: var(--brass); }
+.bl-note .error-code { display: block; margin-bottom: 8px; font: italic 500 clamp(110px, 18vw, 220px)/.9 var(--serif); color: var(--brass); }
+.bl-note h1 { margin: 0; font: 500 clamp(44px, 6vw, 88px)/1 var(--serif); letter-spacing: -.02em; }
+.bl-note__card p:not(:first-child) { max-width: 56ch; margin: 18px auto 0; font-size: clamp(16px, 1.2vw, 18px); line-height: 1.65; color: var(--on-dark-muted); }
+.bl-note .thanks-page__phone { display: inline-block; margin-top: 18px; font: 500 clamp(26px, 2.4vw, 34px)/1.2 var(--serif); color: var(--brass-2); }
+.bl-note :is(.thanks-page__actions, .error-actions) { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: clamp(28px, 3vw, 40px); }
+.bl-note .error-note { font-size: 15px !important; }
+.bl-list .bl-hero, .bl-list .bl-list__hero { padding-bottom: clamp(28px, 3vw, 44px); }
+.bl-list .bl-body { padding-top: clamp(8px, 1vw, 16px); }
