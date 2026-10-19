@@ -1315,42 +1315,15 @@ html.is-accessibility-mode *, html.is-accessibility-mode *::before, html.is-acce
 }
 
 /* ===== варианты: booking-chips ===== */
-/* Окно быстрой записи (dh-assistant), «Что беспокоит?»: варианты на выбор, html[data-cv="1|2|3"].
+/* Окно быстрой записи (dh-assistant), «Что беспокоит?»: «Облако», выбор Ильи 19.10.
    Кнопки направлений, их подписи и то, что уходит в заявку, не меняются; только вид. */
-html[data-cv]:not(.is-accessibility-mode) .dhq__chips { overflow: visible; margin: 0; padding: 0; -webkit-mask-image: none; mask-image: none; }
+html:root:not(.is-accessibility-mode) .dhq__chips { overflow: visible; margin: 0; padding: 0; -webkit-mask-image: none; mask-image: none; }
 
-/* 1. «Облако»: все направления видны сразу, переносятся на новую строку */
-html[data-cv="1"]:not(.is-accessibility-mode) .dhq__chips { display: flex; flex-wrap: wrap; gap: 7px; }
-html[data-cv="1"]:not(.is-accessibility-mode) .dhq__chip { flex: 0 0 auto; min-height: 36px; padding: 7px 14px; background: #fff; font-size: 13.5px; }
-html[data-cv="1"]:not(.is-accessibility-mode) .dhq__chip[aria-pressed="true"] { border-color: var(--moss); background: var(--moss); color: var(--on-dark); }
-html[data-cv="1"]:not(.is-accessibility-mode) .dhq__chip--urgent[aria-pressed="true"] { border-color: var(--dhq-urgent); background: var(--dhq-urgent); color: #fff; }
-
-/* 2. «Плитки»: две колонки, у каждой плитки кружок выбора справа */
-html[data-cv="2"]:not(.is-accessibility-mode) .dhq__chips { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-html[data-cv="2"]:not(.is-accessibility-mode) .dhq__chip { position: relative; display: flex; align-items: center; min-height: 46px; padding: 9px 36px 9px 13px; border-color: var(--line); border-radius: 0; background: #fff; font-size: 13.5px; line-height: 1.25; text-align: left; }
-html[data-cv="2"]:not(.is-accessibility-mode) .dhq__chip--urgent { grid-column: 1 / -1; }
-html[data-cv="2"]:not(.is-accessibility-mode) .dhq__chip::before { content: ""; position: absolute; top: 50%; right: 12px; width: 16px; height: 16px; margin-top: -8px; border-radius: 50%; box-shadow: inset 0 0 0 1px var(--line-strong); transition: background .25s, box-shadow .25s; }
-html[data-cv="2"]:not(.is-accessibility-mode) .dhq__chip::after { content: ""; position: absolute; top: 50%; right: 18px; width: 4px; height: 8px; margin-top: -6px; border: solid var(--moss-2); border-width: 0 1.5px 1.5px 0; transform: rotate(45deg); opacity: 0; transition: opacity .2s; }
-html[data-cv="2"]:not(.is-accessibility-mode) .dhq__chip[aria-pressed="true"] { border-color: var(--moss); background: var(--moss); color: var(--on-dark); }
-html[data-cv="2"]:not(.is-accessibility-mode) .dhq__chip[aria-pressed="true"]::before { background: var(--brass-2); box-shadow: none; }
-html[data-cv="2"]:not(.is-accessibility-mode) .dhq__chip[aria-pressed="true"]::after { opacity: 1; }
-html[data-cv="2"]:not(.is-accessibility-mode) .dhq__chip--urgent::before { box-shadow: inset 0 0 0 1px rgba(138, 59, 46, .4); }
-html[data-cv="2"]:not(.is-accessibility-mode) .dhq__chip--urgent[aria-pressed="true"] { border-color: var(--dhq-urgent); background: var(--dhq-urgent); color: #fff; }
-html[data-cv="2"]:not(.is-accessibility-mode) .dhq__chip--urgent[aria-pressed="true"]::before { background: #fff; }
-html[data-cv="2"]:not(.is-accessibility-mode) .dhq__chip--urgent::after { border-color: var(--dhq-urgent); }
-
-/* 3. «Список»: как список настроек в телефоне, выбранная строка с галочкой */
-html[data-cv="3"]:not(.is-accessibility-mode) .dhq__chips { display: block; border: 1px solid var(--line); background: #fff; }
-html[data-cv="3"]:not(.is-accessibility-mode) .dhq__chip { position: relative; display: flex; align-items: center; width: 100%; min-height: 44px; padding: 10px 44px 10px 14px; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; background: transparent; color: var(--ink); font-size: 15px; text-align: left; }
-html[data-cv="3"]:not(.is-accessibility-mode) .dhq__chip:last-child { border-bottom: 0; }
-html[data-cv="3"]:not(.is-accessibility-mode) .dhq__chip:hover,
-html[data-cv="3"]:not(.is-accessibility-mode) .dhq__chip:focus-visible { background: var(--ivory); box-shadow: none; }
-html[data-cv="3"]:not(.is-accessibility-mode) .dhq__chip::after { content: ""; position: absolute; top: 50%; right: 19px; width: 6px; height: 12px; margin-top: -8px; border: solid var(--moss); border-width: 0 2px 2px 0; transform: rotate(45deg); opacity: 0; transition: opacity .2s; }
-html[data-cv="3"]:not(.is-accessibility-mode) .dhq__chip[aria-pressed="true"] { background: transparent; color: var(--moss); font-weight: 500; }
-html[data-cv="3"]:not(.is-accessibility-mode) .dhq__chip[aria-pressed="true"]::after { opacity: 1; }
-html[data-cv="3"]:not(.is-accessibility-mode) .dhq__chip--urgent,
-html[data-cv="3"]:not(.is-accessibility-mode) .dhq__chip--urgent[aria-pressed="true"] { background: transparent; color: var(--dhq-urgent); }
-html[data-cv="3"]:not(.is-accessibility-mode) .dhq__chip--urgent::after { border-color: var(--dhq-urgent); }
+/* все направления видны сразу, переносятся на новую строку */
+html:root:not(.is-accessibility-mode) .dhq__chips { display: flex; flex-wrap: wrap; gap: 7px; }
+html:root:not(.is-accessibility-mode) .dhq__chip { flex: 0 0 auto; min-height: 36px; padding: 7px 14px; background: #fff; font-size: 13.5px; }
+html:root:not(.is-accessibility-mode) .dhq__chip[aria-pressed="true"] { border-color: var(--moss); background: var(--moss); color: var(--on-dark); }
+html:root:not(.is-accessibility-mode) .dhq__chip--urgent[aria-pressed="true"] { border-color: var(--dhq-urgent); background: var(--dhq-urgent); color: #fff; }
 
 /* ===== варианты: clinic-benefits.m ===== */
 /* Клиника, преимущества, телефон (до 760 px): «Строки» на моховой полосе (выбор Ильи 2026-10-18).
@@ -1548,53 +1521,24 @@ html[data-cv="3"]:not(.is-accessibility-mode) .dhq__chip--urgent::after { border
 }
 
 /* ===== варианты: header ===== */
-/* Шапка на телефоне и планшете (до 1140 px, где меню-бургер): варианты на выбор.
-   html[data-hv="1|2|3"], без атрибута нынешний вид. Матовая плашка остаётся во всех вариантах. */
+/* Шапка на телефоне и планшете (до 1140 px, где меню-бургер): «Два острова», выбор Ильи 19.10.
+   Логотип и кнопки на отдельных матовых капсулах, между ними видна страница. */
 @media (max-width: 1140px) {
-  /* 1. «Паспарту»: прямоугольная матовая плашка с тонкой латунной рамкой внутри, как у карточек сайта */
-  html[data-hv="1"] .site-header .site-header__inner { border-radius: 0; padding: 0 8px 0 16px; }
-  html[data-hv="1"] .site-header--scrolled .site-header__inner::after,
-  html[data-hv="1"] .site-header.is-mobile-menu-open .site-header__inner::after { content: ""; position: absolute; inset: 4px; border: 1px solid rgba(122, 92, 43, .34); pointer-events: none; }
-  html[data-hv="1"] .site-header :is(.site-header__phone, .site-header__menu) { width: 42px; height: 42px; border-radius: 0; box-shadow: inset 0 0 0 1px color-mix(in srgb, currentColor 34%, transparent); }
-  html[data-hv="1"] .site-header .site-header__phone .ico { color: var(--brass); }
-  html[data-hv="1"] .site-header--scrolled .site-header__phone .ico { color: var(--brass-ink); }
-  html[data-hv="1"] .site-header__menu span { left: 12px; right: 12px; }
-  html[data-hv="1"] .site-header__menu span:first-child { top: 17px; }
-  html[data-hv="1"] .site-header__menu span:last-child { top: 24px; }
-  html[data-hv="1"] .site-header__actions { gap: 6px; }
-
-  /* 2. «Два острова»: логотип и кнопки на отдельных матовых капсулах, между ними видна страница */
-  html[data-hv="2"] .site-header .site-header__inner { gap: 0; padding: 0; border-color: transparent; background: transparent; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
-  html[data-hv="2"] .site-header :is(.site-header__brand, .site-header__actions, .site-header__menu) { height: 52px; border: 1px solid rgba(255, 255, 255, .2); background: rgba(10, 38, 34, .3); -webkit-backdrop-filter: blur(16px) saturate(1.4); backdrop-filter: blur(16px) saturate(1.4); transition: background .45s var(--ease), border-color .45s; }
-  html[data-hv="2"] .site-header:is(.site-header--scrolled, .is-mobile-menu-open) :is(.site-header__brand, .site-header__actions, .site-header__menu) { border-color: rgba(255, 255, 255, .55); background: rgba(252, 250, 245, .7); box-shadow: 0 18px 36px -26px rgba(14, 48, 44, .5); }
-  html[data-hv="2"]:has(:is([data-light~="1"][data-v="1"], [data-light~="2"][data-v="2"], [data-light~="3"][data-v="3"])) .site-header:not(.site-header--scrolled) :is(.site-header__brand, .site-header__actions, .site-header__menu) { border-color: var(--line); background: rgba(252, 250, 245, .7); box-shadow: 0 18px 36px -26px rgba(14, 48, 44, .5); }
-  html[data-hv="2"] .site-header.is-mobile-menu-open :is(.site-header__brand, .site-header__actions, .site-header__menu) { background: rgba(252, 250, 245, .94); }
-  html[data-hv="2"] .site-header__brand { display: flex; align-items: center; padding: 0 18px 0 14px; border-radius: 999px; }
-  html[data-hv="2"] .site-header .site-header__actions { gap: 0; margin-left: auto; padding-left: 4px; border-right: 0; border-radius: 999px 0 0 999px; }
-  html[data-hv="2"] .site-header .site-header__phone { width: 48px; height: 50px; border-radius: 0; box-shadow: none; }
-  html[data-hv="2"] .site-header .site-header__menu { width: 54px; border-left: 0; border-radius: 0 999px 999px 0; box-shadow: inset 1px 0 0 color-mix(in srgb, currentColor 18%, transparent); }
-  html[data-hv="2"] .site-header__menu span { left: 15px; right: 19px; }
-  html[data-hv="2"] .site-header__menu span:first-child { top: 21px; }
-  html[data-hv="2"] .site-header__menu span:last-child { top: 28px; }
-
-  /* 3. «Номер»: номер телефона виден прямо в шапке на капсуле (над первым экраном латунной, при прокрутке цвета мха); меню без кружка */
-  html[data-hv="3"] .site-header .site-header__inner { padding-right: 4px; }
-  html[data-hv="3"] .site-header .site-header__phone { width: auto; height: 42px; gap: 8px; padding: 0 16px 0 14px; border-radius: 999px; background: var(--brass); color: var(--moss-2); box-shadow: none; transition: background .45s var(--ease), color .45s; }
-  html[data-hv="3"] .site-header--scrolled .site-header__phone,
-  html[data-hv="3"] .site-header.is-mobile-menu-open .site-header__phone { background: var(--moss); color: var(--on-dark); }
-  html[data-hv="3"] .site-header .site-header__phone span { display: inline; font: 500 14px/1 var(--sans); letter-spacing: .01em; }
-  html[data-hv="3"] .site-header .site-header__phone .ico { width: 16px; height: 16px; color: currentColor; }
-  html[data-hv="3"] .site-header--scrolled .site-header__phone .ico { color: var(--brass-2); }
-  html[data-hv="3"] .site-header__actions { gap: 2px; }
-  html[data-hv="3"] .site-header .site-header__menu { width: 44px; box-shadow: none; }
-  html[data-hv="3"] .site-header__menu span { left: 11px; right: 11px; }
+  html:root .site-header .site-header__inner { gap: 0; padding: 0; border-color: transparent; background: transparent; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
+  html:root .site-header :is(.site-header__brand, .site-header__actions, .site-header__menu) { height: 52px; border: 1px solid rgba(255, 255, 255, .2); background: rgba(10, 38, 34, .3); -webkit-backdrop-filter: blur(16px) saturate(1.4); backdrop-filter: blur(16px) saturate(1.4); transition: background .45s var(--ease), border-color .45s; }
+  html:root .site-header:is(.site-header--scrolled, .is-mobile-menu-open) :is(.site-header__brand, .site-header__actions, .site-header__menu) { border-color: rgba(255, 255, 255, .55); background: rgba(252, 250, 245, .7); box-shadow: 0 18px 36px -26px rgba(14, 48, 44, .5); }
+  html:root:has(:is([data-light~="1"][data-v="1"], [data-light~="2"][data-v="2"], [data-light~="3"][data-v="3"])) .site-header:not(.site-header--scrolled) :is(.site-header__brand, .site-header__actions, .site-header__menu) { border-color: var(--line); background: rgba(252, 250, 245, .7); box-shadow: 0 18px 36px -26px rgba(14, 48, 44, .5); }
+  html:root .site-header.is-mobile-menu-open :is(.site-header__brand, .site-header__actions, .site-header__menu) { background: rgba(252, 250, 245, .94); }
+  html:root .site-header__brand { display: flex; align-items: center; padding: 0 18px 0 14px; border-radius: 999px; }
+  html:root .site-header .site-header__actions { gap: 0; margin-left: auto; padding-left: 4px; border-right: 0; border-radius: 999px 0 0 999px; }
+  html:root .site-header .site-header__phone { width: 48px; height: 50px; border-radius: 0; box-shadow: none; }
+  html:root .site-header .site-header__menu { width: 54px; border-left: 0; border-radius: 0 999px 999px 0; box-shadow: inset 1px 0 0 color-mix(in srgb, currentColor 18%, transparent); }
+  html:root .site-header__menu span { left: 15px; right: 19px; }
+  html:root .site-header__menu span:first-child { top: 21px; }
+  html:root .site-header__menu span:last-child { top: 28px; }
 }
 @media (max-width: 899px) {
-  html[data-hv="2"]:has(.dhero[data-v="1"]) .site-header :is(.site-header__brand, .site-header__actions, .site-header__menu) { border-color: rgba(255, 255, 255, .55); background: rgba(252, 250, 245, .7); }
-}
-@media (max-width: 380px) {
-  html[data-hv="3"] .site-header .site-header__phone span { display: none; }
-  html[data-hv="3"] .site-header .site-header__phone { width: 42px; padding: 0; justify-content: center; }
+  html:root:has(.dhero[data-v="1"]) .site-header :is(.site-header__brand, .site-header__actions, .site-header__menu) { border-color: rgba(255, 255, 255, .55); background: rgba(252, 250, 245, .7); }
 }
 
 /* ===== варианты: ortho ===== */
