@@ -222,9 +222,10 @@
   const page = $(".pg")?.dataset.pvPage || "Страница";
   const device = () => (innerWidth >= 1100 ? "компьютер" : innerWidth <= 760 ? "телефон" : "планшет");
   const storeKey = () => "dh-pv-" + location.pathname + "-" + device();
-  // выбор Ильи для компьютера закреплён в разметке (data-vd): на компьютере секция стоит в нём и в панель не попадает
+  // выбор Ильи закреплён в разметке: data-vd для компьютера, data-vm для телефона и планшета;
+  // закреплённая секция стоит в своём варианте и в панель не попадает
   secs.forEach((s) => { s.dataset.v0 = s.dataset.v || "1"; });
-  const fixedV = (s) => (device() === "компьютер" && s.dataset.vd ? Number(s.dataset.vd) : 0);
+  const fixedV = (s) => Number((device() === "компьютер" ? s.dataset.vd : s.dataset.vm) || 0);
   const active = () => secs.filter((s) => !fixedV(s));
   const load = () => {
     let saved = {};
