@@ -222,12 +222,20 @@
   const page = $(".pg")?.dataset.pvPage || "Страница";
   const device = () => (innerWidth >= 1100 ? "компьютер" : innerWidth <= 760 ? "телефон" : "планшет");
   const storeKey = () => "dh-pv-" + location.pathname + "-" + device();
+  // выбор Ильи для компьютера закреплён в разметке (data-vd): на компьютере секция стоит в нём и в панель не попадает
+  secs.forEach((s) => { s.dataset.v0 = s.dataset.v || "1"; });
+  const fixedV = (s) => (device() === "компьютер" && s.dataset.vd ? Number(s.dataset.vd) : 0);
+  const active = () => secs.filter((s) => !fixedV(s));
   const load = () => {
     let saved = {};
     try { saved = JSON.parse(localStorage.getItem(storeKey()) || "{}"); } catch (e) { /* приватный режим */ }
-    secs.forEach((s) => { const v = saved[s.dataset.vkey]; if (Number.isInteger(v) && v >= 1 && v <= names(s).length && v !== getV(s)) setV(s, v, false); });
+    secs.forEach((s) => {
+      let v = fixedV(s) || saved[s.dataset.vkey];
+      if (!(Number.isInteger(v) && v >= 1 && v <= names(s).length)) v = Number(s.dataset.v0);
+      if (v !== getV(s)) setV(s, v, false);
+    });
   };
-  const save = () => { try { localStorage.setItem(storeKey(), JSON.stringify(Object.fromEntries(secs.map((s) => [s.dataset.vkey, getV(s)])))); } catch (e) { /* приватный режим */ } };
+  const save = () => { try { localStorage.setItem(storeKey(), JSON.stringify(Object.fromEntries(active().map((s) => [s.dataset.vkey, getV(s)])))); } catch (e) { /* приватный режим */ } };
   if (secs.length && !isA11y()) {
     load();
     const panel = document.createElement("div");
@@ -242,7 +250,7 @@
     let cur = null;
     const drawList = () => {
       $(".pv-panel__dev", list).textContent = "Выбор для устройства: " + device();
-      $("ul", list).innerHTML = secs.map((s, i) => `<li><button type="button" data-go="${i}"><span>${s.dataset.vname}</span><b>${names(s)[getV(s) - 1]}</b></button></li>`).join("");
+      $("ul", list).innerHTML = secs.map((s, i) => fixedV(s) ? "" : `<li><button type="button" data-go="${i}"><span>${s.dataset.vname}</span><b>${names(s)[getV(s) - 1]}</b></button></li>`).join("");
     };
     const drawBar = () => {
       if (!cur) return;
@@ -252,7 +260,7 @@
     const pick = () => {
       const y = innerHeight * 0.45;
       let best = null;
-      secs.forEach((s) => { const r = s.getBoundingClientRect(); if (r.top <= y && r.bottom > y) best = s; });
+      active().forEach((s) => { const r = s.getBoundingClientRect(); if (r.top <= y && r.bottom > y) best = s; });
       panel.classList.toggle("is-away", !best);
       if (best && best !== cur) { cur = best; drawBar(); }
     };
@@ -264,10 +272,10 @@
     list.addEventListener("click", (e) => {
       const go = e.target.closest("[data-go]");
       if (go) { scrollToEl(secs[Number(go.dataset.go)]); return; }
-      if (e.target.closest("[data-pv-reset]")) { secs.forEach((s) => setV(s, 1, false)); save(); drawBar(); drawList(); }
+      if (e.target.closest("[data-pv-reset]")) { active().forEach((s) => setV(s, 1, false)); save(); drawBar(); drawList(); }
       if (e.target.closest("[data-pv-hide]")) { panel.remove(); root.classList.remove("has-pv-panel"); }
       if (e.target.closest("[data-pv-copy]")) {
-        const text = `${page} (${device()}):\n` + secs.map((s) => `${s.dataset.vname}: ${names(s)[getV(s) - 1]}`).join("\n");
+        const text = `${page} (${device()}):\n` + active().map((s) => `${s.dataset.vname}: ${names(s)[getV(s) - 1]}`).join("\n");
         const done = () => { const b = $("[data-pv-copy]", list); b.textContent = "Скопировано"; setTimeout(() => (b.textContent = "Скопировать выбор"), 1600); };
         (navigator.clipboard?.writeText(text) || Promise.reject()).then(done, () => { prompt("Скопируйте выбор:", text); });
       }
@@ -278,8 +286,11 @@
       if (n >= 1 && n <= names(cur).length) change(cur, n);
     });
     // сменилось устройство (повернули планшет, сузили окно): свой сохранённый выбор
+    // когда на устройстве всё уже выбрано, панель не нужна
+    const sync = () => { if (!panel.isConnected) return; panel.hidden = !active().length; root.classList.toggle("has-pv-panel", !panel.hidden); if (cur && fixedV(cur)) cur = null; };
     let lastDev = device();
-    addEventListener("resize", () => { if (device() !== lastDev) { lastDev = device(); load(); drawBar(); } });
+    addEventListener("resize", () => { if (device() !== lastDev) { lastDev = device(); load(); sync(); drawBar(); pick(); } });
+    sync();
     pick();
   }
 
