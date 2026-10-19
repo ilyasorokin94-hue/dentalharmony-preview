@@ -1109,7 +1109,7 @@ a.cinfo__card:hover, a.cinfo__card:focus-visible { background: var(--ivory-2); }
 .booking-modal__close span { position: absolute; left: 14px; right: 14px; top: 21px; height: 1.5px; background: currentColor; }
 .booking-modal__close span:first-child { transform: rotate(45deg); }
 .booking-modal__close span:last-child { transform: rotate(-45deg); }
-.booking-modal__mark { width: 40px; height: 40px; fill: none; stroke: var(--brass-ink); stroke-width: 1.5; margin-bottom: 14px; }
+.booking-modal__mark { display: block; width: auto; height: 52px; margin-bottom: 18px; }
 .booking-modal__header h2 { font: 500 clamp(30px, 3vw, 38px)/1.04 var(--serif); padding-right: 44px; }
 .booking-modal__header p { margin-top: 10px; color: var(--muted); font-size: 15px; }
 .booking-modal__form { position: relative; z-index: 1; display: grid; gap: 14px; margin-top: 24px; }
