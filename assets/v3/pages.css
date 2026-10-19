@@ -1136,6 +1136,19 @@ html.is-accessibility-mode .pg .sec-title, html.is-accessibility-mode .pg .eyebr
 .shero__content { container-type: inline-size; }
 .shero[data-v="2"] .shero__title[style*="--lw"] { font-size: min(clamp(52px, 7vw, 112px), 100cqi / (var(--lw) * .5)); }
 
+/* картинка в середине страницы услуги (19.10.2026): в блоке этапов между заголовком и шагами,
+   делит длинный текст на телефоне; на компьютере встаёт справа от заголовка */
+.spath__mid { display: block; margin: 0 0 clamp(28px, 4vw, 40px); }
+.spath__mid-pic { display: block; aspect-ratio: 4 / 3; overflow: hidden; }
+.spath__mid-pic img { display: block; width: 100%; height: 100%; object-fit: cover; }
+@media (min-width: 1100px) {
+  .spath:not([data-v="2"]) .spath__wrap:has(.spath__mid) { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: clamp(18px, 1.8vw, 28px); }
+  .spath:not([data-v="2"]) .spath__wrap:has(.spath__mid) > * { grid-column: 1 / -1; }
+  .spath:not([data-v="2"]) .spath__wrap:has(.spath__mid) > .pg-head { grid-column: 1 / 7; align-self: end; }
+  .spath:not([data-v="2"]) .spath__wrap:has(.spath__mid) > .spath__mid { grid-column: 8 / 13; grid-row: 1; margin-bottom: clamp(40px, 4vw, 64px); }
+  .spath:not([data-v="2"]) .spath__mid-pic { aspect-ratio: 16 / 10; }
+}
+
 /* ===== 30-blocks.css ===== */
 /* =========================================================================
    Общие блоки внутренних страниц: ссылки на услуги («Услуги врача», «Связанные услуги»)
@@ -1766,3 +1779,9 @@ html.is-accessibility-mode .pg .sec-title, html.is-accessibility-mode .pg .eyebr
 .bl-note .error-note { font-size: 15px !important; }
 .bl-list .bl-hero, .bl-list .bl-list__hero { padding-bottom: clamp(28px, 3vw, 44px); }
 .bl-list .bl-body { padding-top: clamp(8px, 1vw, 16px); }
+
+/* картинки в тексте статьи (19.10.2026): после заголовка раздела, во всю ширину колонки текста */
+.bl-figure { margin: clamp(18px, 2vw, 26px) 0 clamp(22px, 2.4vw, 32px); }
+.bl-figure__pic { display: block; aspect-ratio: 16 / 10; overflow: hidden; }
+.bl-figure__pic img { display: block; width: 100%; height: 100%; object-fit: cover; }
+@media (max-width: 899px) { .bl-figure__pic { aspect-ratio: 4 / 3; } }
