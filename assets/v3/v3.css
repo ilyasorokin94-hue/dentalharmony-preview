@@ -1611,7 +1611,7 @@ html.is-accessibility-mode *, html.is-accessibility-mode *::before, html.is-acce
 
 /* ===== варианты: diagnosis ===== */
 /* 02 · «Диагностика»: варианты для десктопа (от 1100 px)
-   1 «Сюжет»        — снимок закреплён слева (sticky), этапы справа по одному, «камера» на снимке следует за этапами
+   1 «Сюжет»        — снимок закреплён слева (sticky), этапы справа по одному, «камера» на снимке следует за этапами; без фото оборудования
    2 «Линия этапов» — широкий кадр в паспарту, под ним латунная линия прорисовывается и зажигает этапы
    3 «Бенто»        — сетка плиток: снимок, оборудование, лид, четыре этапа, латунная плитка записи
    Вариант 0 («Сейчас») — закреплённая горизонтальная лента из v3.css; ниже её правила снимаются для data-dv. */
@@ -1641,8 +1641,9 @@ html.is-accessibility-mode *, html.is-accessibility-mode *::before, html.is-acce
   .diagnosis[data-dv="1"] .diag__tag--a { left: 26px; top: 26px; }
   .diagnosis[data-dv="1"] .diag__intro { grid-column: 2; grid-row: 1; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, .78fr); column-gap: 28px; align-items: end; padding: clamp(8px, 2vw, 28px) 0 clamp(48px, 5vw, 80px); }
   .diagnosis[data-dv="1"] .diag__intro .sec-title { grid-column: 1 / -1; font-size: clamp(44px, 4.2vw, 70px); }
-  .diagnosis[data-dv="1"] .diag__lead { margin-top: 28px; font-size: 16.5px; }
-  .diagnosis[data-dv="1"] .diag__equipment { margin-top: 28px; }
+  .diagnosis[data-dv="1"] .diag__lead { grid-column: 1 / -1; margin-top: 28px; font-size: 16.5px; }
+  /* фото томографа рядом с текстом здесь не смотрится (Илья, 2026-10-19): в «Сюжете» его нет */
+  .diagnosis[data-dv="1"] .diag__equipment { display: none; }
   .diagnosis[data-dv="1"] .diag__steps { grid-column: 2; grid-row: 2; grid-template-columns: minmax(0, 1fr); }
   .diagnosis[data-dv="1"] .dstep { display: grid; align-content: center; gap: 18px; min-height: clamp(290px, 40vh, 420px); padding: 36px 0; border-top: 1px solid var(--line-dark); }
   .diagnosis[data-dv="1"] .dstep:hover { background: none; }
@@ -2531,10 +2532,11 @@ html.is-accessibility-mode *, html.is-accessibility-mode *::before, html.is-acce
   .restoration[data-dv="2"] .workflow { grid-column: 1 / -1; grid-row: 3; margin-top: clamp(72px, 7vw, 112px); }
   /* узкая полоса про имплантацию: снимок импланта и запись */
   .restoration[data-dv="2"] .container::after { content: ""; grid-column: 1 / -1; grid-row: 4; margin-top: clamp(64px, 6vw, 96px); background: var(--ivory); box-shadow: 0 0 0 1px var(--line), 0 40px 80px -64px rgba(14, 48, 44, .45); }
-  .restoration[data-dv="2"] .resto__visual { grid-column: 1 / 4; grid-row: 4; z-index: 1; height: clamp(200px, 17vw, 250px); max-width: none; margin: clamp(64px, 6vw, 96px) 0 0; padding: 0; box-shadow: none; }
+  /* снимок импланта целиком, в его родном формате 2:3 (Илья, 2026-10-19): полоса подстраивается по высоте */
+  .restoration[data-dv="2"] .resto__visual { grid-column: 1 / 4; grid-row: 4; z-index: 1; height: auto; aspect-ratio: 2 / 3; max-width: none; margin: clamp(64px, 6vw, 96px) 0 0; padding: 0; box-shadow: none; }
   .restoration[data-dv="2"] .resto__visual::after { inset: 8px; border-color: rgba(203, 176, 122, .55); }
   .restoration[data-dv="2"] .resto__visual picture { height: 100%; }
-  .restoration[data-dv="2"] .resto__visual img { height: 100%; aspect-ratio: auto; object-position: 50% 16%; }
+  .restoration[data-dv="2"] .resto__visual img { height: 100%; aspect-ratio: auto; object-position: 50% 50%; }
   .restoration[data-dv="2"] .resto__actions { grid-column: 4 / -1; grid-row: 4; z-index: 1; align-self: center; justify-content: space-between; margin: clamp(64px, 6vw, 96px) 0 0; padding: 0 clamp(28px, 3vw, 48px) 0 0; border: 0; }
 
   /* ---------- 3 · Разворот ---------- */
