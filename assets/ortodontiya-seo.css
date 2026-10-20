@@ -1,0 +1,238 @@
+.orthodontics-seo-price-list {
+  display: grid;
+  align-content: start;
+  gap: 0.58rem;
+  min-width: 0;
+}
+
+.orthodontics-seo-price-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 1.25rem;
+  min-width: 0;
+  padding: 0.92rem 1rem;
+  border: 1px solid rgba(169, 130, 67, 0.22);
+  border-radius: 16px;
+  background: rgba(255, 250, 242, 0.78);
+  transition: border-color 0.28s ease, background 0.28s ease, box-shadow 0.28s ease, transform 0.28s ease;
+}
+
+.orthodontics-seo-price-row:hover {
+  border-color: rgba(15, 111, 100, 0.3);
+  background: linear-gradient(135deg, rgba(231, 248, 243, 0.48), rgba(255, 250, 242, 0.86));
+  box-shadow: 0 12px 30px rgba(0, 90, 80, 0.07);
+  transform: translateY(-2px);
+}
+
+.orthodontics-seo-price-row h3 {
+  min-width: 0;
+  margin: 0;
+  color: #07554d;
+  font-size: 0.98rem;
+  line-height: 1.3;
+}
+
+.orthodontics-seo-price-row b {
+  color: #24312f;
+  font-family: var(--font-serif-display);
+  font-size: clamp(1.32rem, 1.7vw, 1.58rem);
+  font-weight: 400;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.braces-page .orthodontics-seo-price-note {
+  margin: 0.85rem 0 0;
+  padding: 0.86rem 1rem;
+  border-left: 3px solid rgba(169, 130, 67, 0.84);
+  border-radius: 0 14px 14px 0;
+  background: rgba(255, 250, 242, 0.58);
+  font-size: 0.94rem;
+  line-height: 1.52;
+}
+
+@media (min-width: 1001px) {
+  .braces-page .single-implant-price {
+    grid-template-columns: minmax(0, 0.82fr) minmax(27rem, 1.18fr);
+    align-items: start;
+  }
+}
+
+@media (max-width: 620px) {
+  .orthodontics-seo-price-row {
+    grid-template-columns: 1fr;
+    gap: 0.52rem;
+    padding: 0.8rem 0.84rem;
+    border-radius: 14px;
+  }
+
+  .orthodontics-seo-price-row b {
+    font-size: 1.34rem;
+  }
+
+  .braces-page .orthodontics-seo-price-note {
+    padding: 0.76rem 0.84rem;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 335px) {
+  html {
+    min-width: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .orthodontics-seo-price-row {
+    transition: none;
+  }
+}
+
+.implant-hub-page--orthodontics .orthodontics-hub-price {
+  align-items: start;
+}
+
+.implant-hub-page--orthodontics .orthodontics-hub-price__content {
+  align-content: start;
+}
+
+.implant-hub-page--orthodontics .orthodontics-hub-price__consultation {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 1rem;
+  width: min(100%, 34rem);
+  margin-top: 0.18rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid rgba(169, 130, 67, 0.24);
+  border-radius: 16px;
+  background: rgba(255, 250, 242, 0.78);
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.78);
+}
+
+.implant-hub-page--orthodontics .orthodontics-hub-price__consultation h3 {
+  min-width: 0;
+  margin: 0;
+  color: #07554d;
+  font-size: 0.98rem;
+  line-height: 1.32;
+}
+
+.implant-hub-page--orthodontics .orthodontics-hub-price__consultation b {
+  color: #24312f;
+  font-family: var(--font-serif-display);
+  font-size: clamp(1.4rem, 1.8vw, 1.62rem);
+  font-weight: 400;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.implant-hub-page--orthodontics .orthodontics-hub-price__methods {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(0.85rem, 1.25vw, 1rem);
+  min-width: 0;
+  align-items: stretch;
+}
+
+.implant-hub-page--orthodontics .orthodontics-hub-price__method {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: clamp(1.05rem, 1.6vw, 1.3rem);
+  border: 1px solid rgba(169, 130, 67, 0.22);
+  border-radius: 22px;
+  background: radial-gradient(circle at 0% 0%, rgba(255, 255, 255, 0.72), transparent 11rem), rgba(255, 250, 242, 0.74);
+  box-shadow: 0 16px 38px rgba(74, 53, 27, 0.07), inset 0 1px rgba(255, 255, 255, 0.8);
+  transition: border-color 0.28s ease, box-shadow 0.28s ease, transform 0.28s ease;
+}
+
+@media (min-width: 1081px) {
+  .implant-hub-page--orthodontics .orthodontics-hub-price__methods {
+    align-self: center;
+  }
+}
+
+.implant-hub-page--orthodontics .orthodontics-hub-price__method-mark {
+  display: block;
+  width: 2.3rem;
+  height: 0.2rem;
+  margin-bottom: 0.9rem;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #bf9252, #0f6f64);
+}
+
+.implant-hub-page--orthodontics .orthodontics-hub-price__method h3 {
+  margin: 0;
+  color: #24312f;
+  font-family: var(--font-serif-display);
+  font-size: clamp(1.42rem, 1.8vw, 1.72rem);
+  font-weight: 400;
+  line-height: 1.12;
+}
+
+.implant-hub-page--orthodontics .orthodontics-hub-price__method p {
+  flex: 1 1 auto;
+  margin: 0.68rem 0 0;
+  color: rgba(31, 45, 43, 0.72);
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
+.implant-hub-page--orthodontics .orthodontics-hub-price__method-link {
+  align-self: stretch;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 58px;
+  margin-top: 1.05rem;
+  padding-inline: 0.9rem;
+  font-size: 0.92rem;
+  line-height: 1.22;
+  text-align: left;
+}
+
+@media (hover: hover) {
+  .implant-hub-page--orthodontics .orthodontics-hub-price__method:hover {
+    border-color: rgba(15, 111, 100, 0.34);
+    box-shadow: 0 20px 46px rgba(0, 90, 80, 0.1), inset 0 1px rgba(255, 255, 255, 0.82);
+    transform: translateY(-2px);
+  }
+}
+
+@media (max-width: 620px) {
+  .implant-hub-page--orthodontics .orthodontics-hub-price__methods {
+    grid-template-columns: 1fr;
+    grid-auto-rows: 1fr;
+  }
+
+  .implant-hub-page--orthodontics .orthodontics-hub-price__method {
+    height: 100%;
+    padding: 1rem;
+    border-radius: 18px;
+  }
+
+  .implant-hub-page--orthodontics .orthodontics-hub-price__method-link {
+    min-height: 54px;
+    margin-top: 0.9rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .implant-hub-page--orthodontics .orthodontics-hub-price__consultation {
+    grid-template-columns: 1fr;
+    gap: 0.48rem;
+    padding: 0.82rem 0.86rem;
+    border-radius: 14px;
+  }
+
+  .implant-hub-page--orthodontics .orthodontics-hub-price__consultation b {
+    font-size: 1.4rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .implant-hub-page--orthodontics .orthodontics-hub-price__method {
+    transition: none;
+  }
+}

@@ -4,12 +4,12 @@
    без точек-разделителей. Без JS и при «уменьшить движение» всё видно сразу.
    ========================================================================= */
 
-@font-face { font-family: "Onest"; src: url("/assets/v3/fonts/onest-cyrillic.woff2") format("woff2"); font-weight: 100 900; font-style: normal; font-display: swap; unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
-@font-face { font-family: "Onest"; src: url("/assets/v3/fonts/onest-latin.woff2") format("woff2"); font-weight: 100 900; font-style: normal; font-display: swap; unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
-@font-face { font-family: "Cormorant"; src: url("/assets/v3/fonts/cormorant-cyrillic.woff2") format("woff2"); font-weight: 300 700; font-style: normal; font-display: swap; unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
-@font-face { font-family: "Cormorant"; src: url("/assets/v3/fonts/cormorant-latin.woff2") format("woff2"); font-weight: 300 700; font-style: normal; font-display: swap; unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
-@font-face { font-family: "Cormorant"; src: url("/assets/v3/fonts/cormorant-italic-cyrillic.woff2") format("woff2"); font-weight: 300 700; font-style: italic; font-display: swap; unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
-@font-face { font-family: "Cormorant"; src: url("/assets/v3/fonts/cormorant-italic-latin.woff2") format("woff2"); font-weight: 300 700; font-style: italic; font-display: swap; unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: "Onest"; src: url("fonts/onest-cyrillic.woff2") format("woff2"); font-weight: 100 900; font-style: normal; font-display: swap; unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
+@font-face { font-family: "Onest"; src: url("fonts/onest-latin.woff2") format("woff2"); font-weight: 100 900; font-style: normal; font-display: swap; unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: "Cormorant"; src: url("fonts/cormorant-cyrillic.woff2") format("woff2"); font-weight: 300 700; font-style: normal; font-display: swap; unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
+@font-face { font-family: "Cormorant"; src: url("fonts/cormorant-latin.woff2") format("woff2"); font-weight: 300 700; font-style: normal; font-display: swap; unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: "Cormorant"; src: url("fonts/cormorant-italic-cyrillic.woff2") format("woff2"); font-weight: 300 700; font-style: italic; font-display: swap; unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
+@font-face { font-family: "Cormorant"; src: url("fonts/cormorant-italic-latin.woff2") format("woff2"); font-weight: 300 700; font-style: italic; font-display: swap; unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
 
 :root {
   --ivory: #FCFAF5;
@@ -975,7 +975,7 @@ a.cinfo__card:hover, a.cinfo__card:focus-visible { background: var(--ivory-2); }
 .site-footer__legal p { color: var(--on-dark-muted); font-size: 14px; line-height: 1.7; }
 .site-footer__legal-name { color: var(--on-dark) !important; font-weight: 500; }
 .site-footer__brand { display: grid; justify-items: start; gap: 10px; }
-.site-footer__mark { width: 44px; height: 44px; background: var(--brass); -webkit-mask: url("/assets/v3/img/logo-mark.svg") center / contain no-repeat; mask: url("/assets/v3/img/logo-mark.svg") center / contain no-repeat; }
+.site-footer__mark { width: 44px; height: 44px; background: var(--brass); -webkit-mask: url("img/logo-mark.svg") center / contain no-repeat; mask: url("img/logo-mark.svg") center / contain no-repeat; }
 .site-footer__brand h2 { font: 500 32px/1 var(--serif); }
 .site-footer__brand p { font-size: 12px; letter-spacing: .26em; color: var(--brass); }
 .site-footer__contacts { display: grid; gap: 14px; }

@@ -9,10 +9,10 @@
   window.__DH_ASSISTANT_LOADED__ = true;
 
   const VERSION = "2026.10.03-quick";
-  const CSS_URL = "/assets/dh-quick.css?v=20261003-quick1";
+  const CSS_URL = (window.__dhBase || "") + "assets/dh-quick.css?v=20261003-quick1";
   const PHONE_HREF = "tel:+79168629494";
   const PHONE_LABEL = "+7 (916) 862-94-94";
-  const LOGO_URL = "/assets/v3/img/logo-mark.svg";
+  const LOGO_URL = (window.__dhBase || "") + "assets/v3/img/logo-mark.svg";
   const INVITE_SESSION_KEY = "dhq-invite-shown-v1";
   const INVITE_DISMISS_KEY = "dhq-invite-dismissed-until-v1";
   const DISMISS_MS = 7 * 24 * 60 * 60 * 1000;
