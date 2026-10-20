@@ -12,8 +12,7 @@
   const anim = !!(G && ST) && !reduce && !isA11y();
   root.classList.add("v3-ready");
   if (!anim) {
-    root.classList.remove("js-anim", "js-intro");
-    $(".intro")?.remove();
+    root.classList.remove("js-anim");
   }
 
   const header = $(".site-header");
@@ -66,7 +65,6 @@
   });
 
   // пока открыто окно записи, меню или быстрая запись, страница стоит
-  let introRunning = false;
   const setRootClass = (name, on) => { if (root.classList.contains(name) !== on) root.classList.toggle(name, on); };
   const syncLock = () => {
     const booking = !!modal?.classList.contains("is-open");
@@ -74,7 +72,7 @@
     setRootClass("is-booking-open", booking);
     setRootClass("has-mobile-menu", menu);
     if (!lenis) return;
-    const stop = booking || menu || introRunning || root.classList.contains("dhq-lock");
+    const stop = booking || menu || root.classList.contains("dhq-lock");
     if (stop && !lenis.isStopped) lenis.stop();
     else if (!stop && lenis.isStopped) lenis.start();
   };
@@ -467,93 +465,7 @@
       .from(".site-header__inner", { y: -24, autoAlpha: 0, duration: 0.9, clearProps: "transform,opacity,visibility" }, 0.25);
   };
 
-  // ---------- заставка «Росчерк» (выбор Ильи 2026-10-18) ----------
-  // Знак клиники (двухцветный, латунь) прорисовывается тонкой линией и заливается, по нему проходит блик.
-  // Затем знак уходит, а на его месте раскрывается окно в форме силуэта знака и летит в первый экран
-  const intro = $(".intro");
-  if (intro && root.classList.contains("js-intro")) {
-    introRunning = true;
-    syncLock();
-    try { sessionStorage.setItem("dh-v3-intro", "1"); } catch (e) { /* приватный режим */ }
-    const hole = $(".intro__hole", intro), rim = $(".intro__rim", intro), slot = $(".intro__mark", intro), logo = $(".intro__logo", intro);
-    const q = (sel) => $$(sel, intro);
-    // силуэт в единицах знака (464 по ширине): окно растёт из точки внутри коронки;
-    // r — радиус вписанного круга, по нему считается, когда окно накрыло экран
-    const S = { units: 464, ox: 232, oy: 250, r: 130 };
-    const chars = [];
-    q(".intro__w").forEach((w) => {
-      const text = w.textContent;
-      w.textContent = "";
-      [...text].forEach((ch) => { const s = document.createElement("span"); s.textContent = ch; w.appendChild(s); chars.push(s); });
-    });
-    const W = innerWidth, H = innerHeight;
-    // куда летит окно: на телефоне в центр, на широком экране к зубу на фото первого экрана
-    // (точка зуба на снимке 1600×900; считаем по месту снимка, у вариантов первого экрана оно своё)
-    const wide = W >= 900 && W / H > 1.2;
-    const toothAt = () => {
-      const img = $(".hero__media img");
-      if (!wide || !img || !img.offsetWidth) return [W / 2, H / 2];
-      const r = img.getBoundingClientRect(), w = img.offsetWidth, h = img.offsetHeight;
-      const s = Math.max(w / 1600, h / 900), iw = 1600 * s, ih = 900 * s;
-      const [px, py] = getComputedStyle(img).objectPosition.split(" ").map((v) => parseFloat(v) / 100);
-      return [r.left + r.width / 2 - w / 2 + (w - iw) * px + 0.783 * iw, r.top + r.height / 2 - h / 2 + (h - ih) * py + 0.47 * ih];
-    };
-    let TX = W / 2, TY = H / 2, kEnd = 1;
-    const st = { h: 0, z: 0 };
-    let base = null;
-    const draw = () => {
-      if (!base || st.z === 0) {
-        const r = slot.getBoundingClientRect();
-        const k0 = r.width / S.units;
-        base = { k: k0, x: r.left + S.ox * k0, y: r.top + S.oy * k0 };
-        [TX, TY] = toothAt();
-        kEnd = Math.hypot(Math.max(TX, W - TX), Math.max(TY, H - TY)) / S.r;
-      }
-      const k = base.k * Math.pow(kEnd / base.k, st.z);
-      const p = 1 - Math.pow(1 - st.z, 2.2);
-      const x = base.x + (TX - base.x) * p, y = base.y + (TY - base.y) * p;
-      const t = (s) => `translate(${x} ${y}) scale(${s}) translate(${-S.ox} ${-S.oy})`;
-      rim.setAttribute("transform", t(k));
-      rim.style.strokeWidth = 1.5 / k;
-      hole.setAttribute("transform", t(k * st.h));
-    };
-    draw();
-    intro.classList.add("is-live");
-    G.set(".hero__media img", { scale: 1.14 });
-    const lines = q(".intro__logo path");
-    const tl = G.timeline({ onComplete: () => { intro.remove(); root.classList.remove("js-intro"); introRunning = false; syncLock(); } })
-      .to(q(".intro__glow"), { opacity: 1, duration: 1.4, ease: "power1.out" }, 0)
-      // знак: линия, заливка, блик
-      .to(lines, { strokeDashoffset: 0, duration: 1.15, ease: "power2.inOut", stagger: 0.025 }, 0.05)
-      .to(q(".intro__logo-d path"), { fillOpacity: 1, duration: 0.6, ease: "power1.inOut" }, 0.85)
-      .to(q(".intro__logo-l path"), { fillOpacity: 1, duration: 0.6, ease: "power1.inOut" }, 1.0)
-      .to(lines, { strokeOpacity: 0, duration: 0.5 }, 1.2)
-      .fromTo(q("#ilogo-shine"), { attr: { x1: -464, x2: 0 } }, { attr: { x1: 464, x2: 928 }, duration: 1.1, ease: "power2.inOut" }, 1.35)
-      // название и подпись
-      .set(q(".intro__word"), { opacity: 1 }, 0.5)
-      .from(chars, { yPercent: 125, duration: 0.95, stagger: 0.035, ease: "power4.out" }, 0.5)
-      .fromTo(q(".intro__tag"), { opacity: 0, letterSpacing: "0.5em" }, { opacity: 1, letterSpacing: "0.34em", duration: 1.1, ease: "power3.out" }, 1)
-      .fromTo($(".intro__word em", intro), { "--sh": "110%" }, { "--sh": "-10%", duration: 1, ease: "power2.inOut" }, 1.35)
-      .addLabel("reveal", 2.45)
-      .to(chars, { yPercent: -140, duration: 0.45, stagger: 0.015, ease: "power2.in" }, "reveal-=0.3")
-      .to(q(".intro__tag"), { opacity: 0, y: -8, duration: 0.35, ease: "power2.in" }, "reveal-=0.3")
-      .to(q(".intro__glow"), { opacity: 0, duration: 0.5 }, "reveal")
-      // знак уходит, на его месте раскрывается окно с латунным контуром
-      .to(rim, { opacity: 1, duration: 0.3 }, "reveal-=0.1")
-      .to(logo, { scale: 1.08, autoAlpha: 0, duration: 0.45, ease: "power2.in" }, "reveal-=0.2")
-      .to(st, { h: 1, duration: 0.45, ease: "power2.out", onUpdate: draw }, "reveal")
-      .add(heroIn, "reveal")
-      .to(st, { z: 1, duration: 1.05, ease: "power1.in", onUpdate: draw }, "reveal+=0.3")
-      .to(rim, { opacity: 0, duration: 0.3 }, "reveal+=1.05");
-    // нетерпеливым: касание, клик или клавиша ускоряют заставку
-    const hurry = () => tl.timeScale(4);
-    intro.addEventListener("pointerdown", hurry, { once: true });
-    addEventListener("keydown", hurry, { once: true });
-  } else {
-    intro?.remove();
-    root.classList.remove("js-intro");
-    heroIn();
-  }
+  heroIn();
 
   // в подписи окна быстрой записи точка-разделитель меняется на запятую (на главной без «·»)
   const fixDhqNote = () => {

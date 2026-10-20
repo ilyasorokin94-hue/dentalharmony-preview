@@ -537,7 +537,7 @@
       .then(() => {
         // DH_METRIKA_LEAD_SUCCESS: count only a server-accepted lead, never a mere click.
         const redirectToThanks = () => {
-          const s = getStatusElement(form); setPending(form, false); if (s) { s.textContent = "Это превью: заявка никуда не ушла. На сайте здесь откроется страница «Спасибо»."; }
+          window.location.href = THANKS_URL;
         };
         const formType = form.matches("[data-booking-inline-form]") ? "inline" : "modal";
 

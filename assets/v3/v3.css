@@ -4,12 +4,12 @@
    без точек-разделителей. Без JS и при «уменьшить движение» всё видно сразу.
    ========================================================================= */
 
-@font-face { font-family: "Onest"; src: url("fonts/onest-cyrillic.woff2") format("woff2"); font-weight: 100 900; font-style: normal; font-display: swap; unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
-@font-face { font-family: "Onest"; src: url("fonts/onest-latin.woff2") format("woff2"); font-weight: 100 900; font-style: normal; font-display: swap; unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
-@font-face { font-family: "Cormorant"; src: url("fonts/cormorant-cyrillic.woff2") format("woff2"); font-weight: 300 700; font-style: normal; font-display: swap; unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
-@font-face { font-family: "Cormorant"; src: url("fonts/cormorant-latin.woff2") format("woff2"); font-weight: 300 700; font-style: normal; font-display: swap; unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
-@font-face { font-family: "Cormorant"; src: url("fonts/cormorant-italic-cyrillic.woff2") format("woff2"); font-weight: 300 700; font-style: italic; font-display: swap; unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
-@font-face { font-family: "Cormorant"; src: url("fonts/cormorant-italic-latin.woff2") format("woff2"); font-weight: 300 700; font-style: italic; font-display: swap; unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: "Onest"; src: url("/assets/v3/fonts/onest-cyrillic.woff2") format("woff2"); font-weight: 100 900; font-style: normal; font-display: swap; unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
+@font-face { font-family: "Onest"; src: url("/assets/v3/fonts/onest-latin.woff2") format("woff2"); font-weight: 100 900; font-style: normal; font-display: swap; unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: "Cormorant"; src: url("/assets/v3/fonts/cormorant-cyrillic.woff2") format("woff2"); font-weight: 300 700; font-style: normal; font-display: swap; unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
+@font-face { font-family: "Cormorant"; src: url("/assets/v3/fonts/cormorant-latin.woff2") format("woff2"); font-weight: 300 700; font-style: normal; font-display: swap; unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: "Cormorant"; src: url("/assets/v3/fonts/cormorant-italic-cyrillic.woff2") format("woff2"); font-weight: 300 700; font-style: italic; font-display: swap; unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
+@font-face { font-family: "Cormorant"; src: url("/assets/v3/fonts/cormorant-italic-latin.woff2") format("woff2"); font-weight: 300 700; font-style: italic; font-display: swap; unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
 
 :root {
   --ivory: #FCFAF5;
@@ -157,34 +157,6 @@ main:focus { outline: none; }
 .ulink { position: relative; display: inline-block; padding-bottom: 4px; font-weight: 500; color: var(--emerald); transition: color .3s; }
 .ulink:hover, .ulink:focus-visible { color: var(--moss); }
 
-/* ---------- заставка (один раз за визит) ----------
-   Знак-зуб рисуется латунной линией, буквы поднимаются, по «Гармонии»
-   проходит блик, затем зуб становится окном: сквозь него видно первый
-   экран, и окно раскрывается на весь экран. Без скрипта заставка просто гаснет. */
-.intro { position: fixed; inset: 0; z-index: 2500; display: none; place-items: center; background: var(--moss-2); color: var(--on-dark); }
-.js-intro .intro { display: grid; }
-.intro.is-live { background: none; }
-.intro__veil { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
-.intro__veil-bg { fill: var(--moss-2); }
-.intro__rim { fill: none; stroke: var(--brass); stroke-width: 1.4; stroke-linejoin: round; opacity: 0; }
-.intro__glow { position: absolute; inset: 0; background: radial-gradient(circle at 50% 44%, rgba(203, 176, 122, .17), rgba(203, 176, 122, 0) 46vmax); opacity: 0; pointer-events: none; }
-.intro__in { position: relative; display: grid; justify-items: center; gap: 24px; text-align: center; }
-.intro__mark { display: block; width: clamp(104px, 8vw, 128px); aspect-ratio: 464 / 542; }
-.intro__word { font: 500 clamp(36px, 4.8vw, 60px)/1 var(--serif); letter-spacing: .01em; opacity: 0; }
-.intro__w { position: relative; display: inline-block; overflow: hidden; padding: 0 .08em .16em; margin: 0 -.08em -.16em; vertical-align: top; }
-.intro__w > span { display: inline-block; }
-.intro__word em { color: var(--brass); }
-.intro__word em::after { content: attr(data-text); position: absolute; left: .08em; top: 0; color: #FFF3D2; font-kerning: none; font-variant-ligatures: none; pointer-events: none;
-  -webkit-mask: linear-gradient(105deg, transparent 36%, #000 50%, transparent 64%) var(--sh, 110%) 0 / 260% 100% no-repeat;
-  mask: linear-gradient(105deg, transparent 36%, #000 50%, transparent 64%) var(--sh, 110%) 0 / 260% 100% no-repeat; }
-.intro__tag { font: 500 12px/1 var(--sans); white-space: nowrap; letter-spacing: .34em; text-transform: uppercase; color: var(--on-dark-muted); opacity: 0; }
-/* знак клиники в заставке: двухцветная латунь; сначала прорисовывается тонкой линией, потом заливается */
-.intro__logo { display: block; width: 100%; height: auto; overflow: visible; }
-.intro__logo path { fill-rule: evenodd; fill-opacity: 0; stroke: #E9D5A6; stroke-width: 5; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 1; }
-.intro__logo-d path { fill: var(--brass); }
-.intro__logo-l path { fill: #E9D5A6; }
-/* пока идёт заставка, кнопка записи и плашка cookie не всплывают поверх */
-.js-intro .dhq, .js-intro .cookie-notice { visibility: hidden !important; }
 @media (max-width: 760px) {
   /* у карточек врачей своя кнопка записи: плавающая на это время уходит (класс ставит v3.js) */
   html.dh-in-doctors .dhq.is-ready .dhq__launcher,
@@ -201,12 +173,10 @@ main:focus { outline: none; }
 .sw > span { display: inline-block; }
 /* страховка: если скрипт не загрузился, через 3 секунды всё становится видно */
 @keyframes v3-failsafe { to { opacity: 1; transform: none; visibility: visible; clip-path: none; } }
-@keyframes v3-intro-failsafe { to { opacity: 0; visibility: hidden; } }
 .js-anim:not(.v3-ready) [data-reveal],
 .js-anim:not(.v3-ready) [data-clip],
 .js-anim:not(.v3-ready) [data-hero-fade],
 .js-anim:not(.v3-ready) [data-split] { animation: v3-failsafe .01s 3s forwards; }
-.js-intro:not(.v3-ready) .intro { animation: v3-intro-failsafe .5s 2.5s forwards; }
 
 /* =========================================================================
    ШАПКА
@@ -1005,7 +975,7 @@ a.cinfo__card:hover, a.cinfo__card:focus-visible { background: var(--ivory-2); }
 .site-footer__legal p { color: var(--on-dark-muted); font-size: 14px; line-height: 1.7; }
 .site-footer__legal-name { color: var(--on-dark) !important; font-weight: 500; }
 .site-footer__brand { display: grid; justify-items: start; gap: 10px; }
-.site-footer__mark { width: 44px; height: 44px; background: var(--brass); -webkit-mask: url("../../_astro/logo-mark.Cj3kxIPp.svg") center / contain no-repeat; mask: url("../../_astro/logo-mark.Cj3kxIPp.svg") center / contain no-repeat; }
+.site-footer__mark { width: 44px; height: 44px; background: var(--brass); -webkit-mask: url("/assets/v3/img/logo-mark.svg") center / contain no-repeat; mask: url("/assets/v3/img/logo-mark.svg") center / contain no-repeat; }
 .site-footer__brand h2 { font: 500 32px/1 var(--serif); }
 .site-footer__brand p { font-size: 12px; letter-spacing: .26em; color: var(--brass); }
 .site-footer__contacts { display: grid; gap: 14px; }
@@ -1289,7 +1259,7 @@ html.is-accessibility-mode .site-footer, html.is-accessibility-mode .contacts-fo
 html.is-accessibility-mode .pay__method, html.is-accessibility-mode .dstep { background: #fff !important; color: #111 !important; }
 html.is-accessibility-mode .hero__media, html.is-accessibility-mode .diag__scan, html.is-accessibility-mode .therapy__still,
 html.is-accessibility-mode .band, html.is-accessibility-mode .site-footer__big, html.is-accessibility-mode .diagnosis::before,
-html.is-accessibility-mode .intro, html.is-accessibility-mode .hero__scroll-indicator, html.is-accessibility-mode .hero__dust, html.is-accessibility-mode .rail { display: none !important; }
+html.is-accessibility-mode .hero__scroll-indicator, html.is-accessibility-mode .hero__dust, html.is-accessibility-mode .rail { display: none !important; }
 html.is-accessibility-mode :is(.tcard__shade, .hero__veil, .diag__veil, .diag__focus) { display: none !important; }
 html.is-accessibility-mode .hero { min-height: 0; }
 html.is-accessibility-mode .hero__in { padding-top: calc(var(--header-h) + 48px); margin-top: 0; }
@@ -1310,7 +1280,7 @@ html.is-accessibility-mode *, html.is-accessibility-mode *::before, html.is-acce
 }
 
 @media print {
-  .site-header, .dock, .intro, .booking-modal, .cookie-notice, .hero__ticker, .band, .map { display: none !important; }
+  .site-header, .dock, .booking-modal, .cookie-notice, .hero__ticker, .band, .map { display: none !important; }
   .sec--moss, .hero, .site-footer { background: #fff !important; color: #000 !important; }
 }
 
