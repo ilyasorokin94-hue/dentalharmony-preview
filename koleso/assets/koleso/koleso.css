@@ -12,6 +12,7 @@
   --k-ink-2: var(--ink-2, #3A4743);
   --k-muted: var(--muted, #5E6A65);
   --k-emerald: var(--emerald, #005F58);
+  --k-emerald-2: var(--emerald-2, #08766F);
   --k-moss: var(--moss, #0E302C);
   --k-moss-2: var(--moss-2, #0A2622);
   --k-moss-3: var(--moss-3, #143A35);
@@ -186,6 +187,9 @@ html.koleso-open body { overflow: hidden; }
   box-shadow: 0 0 0 2px var(--k-brass), 0 0 0 7px var(--k-moss-2), 0 10px 24px rgba(0, 0, 0, .35);
 }
 .koleso__hub svg { display: block; width: 46%; height: auto; }
+/* салют после вращения (koleso.js → celebrate) */
+.koleso__burst { position: absolute; inset: 0; z-index: 4; pointer-events: none; }
+.koleso__burst i { position: absolute; left: 50%; top: 50%; display: block; opacity: 0; border-radius: 1px; }
 /* указатель: латунный клин сверху, смотрит в центр */
 .koleso__pointer {
   position: absolute;
@@ -200,7 +204,7 @@ html.koleso-open body { overflow: hidden; }
 }
 .koleso__pointer::after { content: ""; position: absolute; inset: 14% 22% 34%; background: var(--k-brass-2); clip-path: polygon(0 0, 100% 0, 50% 100%); }
 
-.koleso__body { position: relative; z-index: 1; padding: clamp(40px, 4.5vw, 60px) clamp(28px, 4vw, 56px) clamp(32px, 4vw, 48px); }
+.koleso__body { position: relative; z-index: 1; display: flex; flex-direction: column; justify-content: center; padding: clamp(40px, 4.5vw, 60px) clamp(28px, 4vw, 56px) clamp(32px, 4vw, 48px); }
 .koleso__view[hidden] { display: none; }
 .koleso__eyebrow { margin: 0 0 14px; color: var(--k-brass-ink); font: 500 13px/1.2 var(--k-sans); letter-spacing: .16em; text-transform: uppercase; }
 .koleso__title { margin: 0; padding-right: 44px; font: 500 clamp(34px, 3.4vw, 46px)/1.02 var(--k-serif); color: var(--k-ink); }
@@ -211,6 +215,8 @@ html.koleso-open body { overflow: hidden; }
 .koleso-consent__text a { color: inherit; text-decoration: underline; text-underline-offset: .18em; text-decoration-color: rgba(122, 92, 43, .5); }
 .koleso__warning { margin: 18px 0 0; color: var(--k-muted); font-size: 12px; line-height: 1.45; }
 
+.koleso__spin { margin-top: 28px; }
+.koleso__spin + .koleso__status { margin-top: 12px; }
 .koleso__form { display: grid; gap: 14px; margin-top: 24px; }
 .koleso__antispam { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
 .koleso__fields { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -268,28 +274,40 @@ html.koleso-open body { overflow: hidden; }
 .koleso__status { margin: 0; color: var(--k-emerald); font-size: 14.5px; line-height: 1.45; }
 .koleso__status:empty { display: none; }
 .koleso__status[data-state="error"] { color: var(--k-danger); }
+.koleso__status[data-state="won"] { color: var(--k-brass-ink); font-weight: 500; }
 [data-koleso-result-note] { margin-top: 14px; color: var(--k-brass-ink); }
 
-/* ---------- планшет и телефон: колесо сверху, форма снизу ---------- */
+/* ---------- планшет и телефон: окно на весь экран, колесо сверху, текст снизу ----------
+   Колесо занимает всё место, которое остаётся над текстом (container query), поэтому
+   на телефоне шаг целиком виден без прокрутки; на шаге с формой колесо уменьшается. */
 @media (max-width: 899px) {
-  .koleso { place-items: end stretch; padding: 0; }
-  .koleso__panel { grid-template-columns: 1fr; width: 100%; max-height: 100dvh; overflow-y: auto; overscroll-behavior: contain; transform: translateY(40px); }
+  .koleso { place-items: stretch; padding: 0; overflow: hidden; background: var(--k-moss-2); backdrop-filter: none; -webkit-backdrop-filter: none; }
+  .koleso__panel { display: flex; flex-direction: column; width: 100%; height: 100vh; height: 100dvh; overflow-y: auto; overscroll-behavior: contain; transform: translateY(32px); box-shadow: none; }
   .koleso__panel::after { display: none; }
-  .koleso__stage { padding: 40px 24px 22px; }
-  .koleso__wheel { width: min(70vw, 310px); }
-  .koleso__close { top: 12px; right: 12px; background: rgba(252, 250, 245, .92); }
-  .koleso__body { padding: 26px 20px calc(24px + env(safe-area-inset-bottom)); }
-  .koleso__title { padding-right: 0; font-size: 34px; }
-  .koleso__title--prize { font-size: 30px; }
-  .koleso__lead { font-size: 15px; }
+  .koleso__stage { flex: 1 1 0; min-height: 230px; container-type: size; padding: calc(env(safe-area-inset-top) + 52px) 20px 18px; }
+  .koleso[data-view="claim"] .koleso__stage { min-height: 150px; padding-top: calc(env(safe-area-inset-top) + 40px); padding-bottom: 14px; }
+  .koleso__wheel { width: min(100cqw, 100cqh, 400px); }
+  .koleso__close { top: calc(env(safe-area-inset-top) + 10px); right: 12px; background: rgba(252, 250, 245, .92); }
+  .koleso__body { flex: none; display: block; padding: 22px 20px calc(18px + env(safe-area-inset-bottom)); }
+  .koleso__eyebrow { margin-bottom: 10px; font-size: 12px; }
+  .koleso__title { padding-right: 0; font-size: 32px; }
+  .koleso__title--prize { font-size: 27px; line-height: 1.05; }
+  .koleso__lead { margin-top: 10px; font-size: 15px; line-height: 1.5; }
+  .koleso__lead--claim { font-size: 14.5px; }
+  .koleso__terms { margin-top: 8px; font-size: 13px; }
+  .koleso__spin { margin-top: 20px; }
+  .koleso__form { gap: 10px; margin-top: 16px; }
+  .koleso__fields { grid-template-columns: 1fr; gap: 10px; }
+  .koleso-field { gap: 4px; }
+  .koleso-field > span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .koleso-field input { min-height: 50px; }
+  .koleso-consent { font-size: 12.5px; line-height: 1.45; }
+  .koleso__submit, .koleso__ghost { min-height: 54px; }
+  .koleso__actions { margin-top: 20px; }
+  .koleso__warning { margin-top: 12px; font-size: 11.5px; }
 }
 @media (max-width: 520px) {
-  .koleso__fields { grid-template-columns: 1fr; }
   .koleso__actions { grid-template-columns: 1fr; }
-}
-@media (max-width: 899px) and (max-height: 760px) {
-  .koleso__stage { padding: 36px 24px 18px; }
-  .koleso__wheel { width: min(64vw, 260px); }
 }
 
 @media (prefers-reduced-motion: reduce) {

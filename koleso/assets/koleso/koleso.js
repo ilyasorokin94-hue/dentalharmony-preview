@@ -1,9 +1,10 @@
 /* =========================================================================
    Колесо подарков · Зубная Гармония
-   Кнопка внизу слева открывает окно с колесом. Посетитель оставляет имя и телефон,
-   заявка уходит в /api/lead.php (source=koleso) с той же защитой, что у формы записи,
-   а подарок выбирает сервер (api/lib/Koleso.php): один номер — один подарок.
-   Колесо останавливается на подарке из ответа сервера.
+   Кнопка внизу слева открывает окно с колесом. Сначала посетитель крутит колесо без формы:
+   подарок выбирает сервер (/api/koleso.php, api/lib/Koleso.php), колесо останавливается на нём,
+   летит салют. Чтобы забрать подарок, посетитель оставляет имя и телефон: заявка уходит
+   в /api/lead.php (source=koleso, koleso_spin) с той же защитой, что у формы записи,
+   и подарок закрепляется за номером. Один номер — один подарок.
    ЧЕРНОВИК: подписи сегментов, срок и частоту автопоказа утверждает клиника.
    ========================================================================= */
 (function () {
@@ -32,6 +33,7 @@
 
   const CONFIG = {
     endpoint: window.DH_FORM_ENDPOINT || "/api/lead.php",
+    spinEndpoint: window.DH_KOLESO_ENDPOINT || "/api/koleso.php",
     source: "koleso",
     rulesUrl: window.DH_KOLESO_RULES || `${SITE}/koleso-podarkov/`,
     phoneHref: "tel:+79168629494",
@@ -43,7 +45,7 @@
   };
 
   // Превью сайта отвечает на /api/ заглушкой { ok: true, preview: true } — тогда подарок
-  // выбирается случайно в браузере и нигде не сохраняется.
+  // выбирается случайно в браузере, заявка никуда не уходит и ничего не сохраняется.
 
   const STORE_RESULT = "dh-koleso-result";
   const STORE_SEEN = "dh-koleso-seen";
@@ -116,9 +118,11 @@
     `<span class="koleso-fab__wheel" aria-hidden="true">${wheelSvg(false)}<span class="koleso-fab__hub"></span></span>` +
     '<span class="koleso-fab__text" aria-hidden="true"><b>Колесо подарков</b><small>подарок к первому визиту</small></span>';
 
-  const markFabDone = () => {
-    fab.classList.add("is-done");
-    fab.querySelector(".koleso-fab__text small").textContent = "ваш подарок закреплён";
+  // won — подарок выпал, но заявки ещё нет; claimed — подарок закреплён за номером
+  const markFab = (stage) => {
+    fab.classList.toggle("is-done", stage === "claimed");
+    fab.querySelector(".koleso-fab__text small").textContent =
+      stage === "claimed" ? "ваш подарок закреплён" : stage === "won" ? "заберите ваш подарок" : "подарок к первому визиту";
   };
 
   // ---------- окно ----------
@@ -127,6 +131,9 @@
   let lastFocus = null;
   let angle = 0;
   let busy = false;
+  let won = null; // выпавший подарок: { spin, id, title, segment, demo }
+
+  const WARNING = '<p class="koleso__warning">Имеются противопоказания, необходима консультация специалиста.</p>';
 
   const buildDialog = () => {
     dialog = document.createElement("div");
@@ -135,6 +142,7 @@
     dialog.setAttribute("aria-modal", "true");
     dialog.setAttribute("aria-labelledby", "koleso-title");
     dialog.setAttribute("data-lenis-prevent", "");
+    dialog.dataset.view = "spin";
     dialog.hidden = true;
     dialog.innerHTML = `
 <div class="koleso__panel" tabindex="-1">
@@ -144,14 +152,23 @@
       <div class="koleso__rotor" data-koleso-rotor>${wheelSvg(true)}</div>
       <span class="koleso__hub" aria-hidden="true">${LOGO_MARK}</span>
       <span class="koleso__pointer" aria-hidden="true"></span>
+      <span class="koleso__burst" aria-hidden="true" data-koleso-burst></span>
     </div>
   </div>
   <div class="koleso__body">
-    <div class="koleso__view" data-koleso-view="form">
+    <div class="koleso__view" data-koleso-view="spin">
       <p class="koleso__eyebrow">Подарок к первому визиту</p>
-      <h2 class="koleso__title" id="koleso-title">Колесо подарков</h2>
-      <p class="koleso__lead">Крутите колесо и получите подарок на лечение в Зубной Гармонии. Подарок закрепим за вашим номером, администратор позвонит и запишет вас на приём.</p>
-      <p class="koleso__terms">Одна попытка на номер телефона. Подарок действует ${CONFIG.validDays} дней и не суммируется с другими акциями. <a href="${CONFIG.rulesUrl}" target="_blank" rel="noopener">Условия акции</a></p>
+      <h2 class="koleso__title" id="koleso-title" tabindex="-1">Колесо подарков</h2>
+      <p class="koleso__lead">Крутите колесо и узнайте свой подарок на лечение в Зубной Гармонии. На колесе только реальные услуги из прайса клиники.</p>
+      <p class="koleso__terms">Подарок действует ${CONFIG.validDays} дней и не суммируется с другими акциями. <a href="${CONFIG.rulesUrl}" target="_blank" rel="noopener">Условия акции</a></p>
+      <button class="koleso__submit koleso__spin" type="button" data-koleso-spin>Крутить колесо</button>
+      <p class="koleso__status" role="status" aria-live="polite" data-koleso-spin-status></p>
+      ${WARNING}
+    </div>
+    <div class="koleso__view" data-koleso-view="claim" hidden>
+      <p class="koleso__eyebrow">Вам выпало</p>
+      <h2 class="koleso__title koleso__title--prize" tabindex="-1" data-koleso-won-title></h2>
+      <p class="koleso__lead koleso__lead--claim">Чтобы забрать подарок, оставьте имя и телефон. Администратор позвонит и запишет вас на приём.</p>
       <form class="koleso__form" novalidate autocomplete="off" data-koleso-form>
         <div class="koleso__antispam" aria-hidden="true"><label>Компания <input type="text" name="booking_company_field" tabindex="-1" autocomplete="off"></label></div>
         <div class="koleso__fields">
@@ -170,13 +187,13 @@
           <span class="koleso-consent__text">Я даю <a href="${SITE}/personal-data-consent/" target="_blank" rel="noopener">согласие на обработку персональных данных</a> и ознакомлен(а) с <a href="${SITE}/privacy/" target="_blank" rel="noopener">Политикой конфиденциальности</a> и <a href="${CONFIG.rulesUrl}" target="_blank" rel="noopener">условиями акции</a>.</span>
         </label>
         <small class="koleso-field__error" id="koleso-error-consent" data-koleso-error="consent"></small>
-        <button class="koleso__submit" type="submit" data-koleso-submit>Крутить колесо</button>
+        <button class="koleso__submit" type="submit" data-koleso-submit>Забрать подарок</button>
         <p class="koleso__status" role="status" aria-live="polite" data-koleso-status></p>
       </form>
-      <p class="koleso__warning">Имеются противопоказания, необходима консультация специалиста.</p>
+      ${WARNING}
     </div>
-    <div class="koleso__view" data-koleso-view="result" hidden>
-      <p class="koleso__eyebrow" data-koleso-result-eyebrow>Ваш подарок</p>
+    <div class="koleso__view" data-koleso-view="done" hidden>
+      <p class="koleso__eyebrow" data-koleso-result-eyebrow>Подарок ваш</p>
       <h2 class="koleso__title koleso__title--prize" tabindex="-1" data-koleso-result-title></h2>
       <p class="koleso__lead" data-koleso-result-text></p>
       <p class="koleso__status" data-koleso-result-note></p>
@@ -185,7 +202,7 @@
         <button class="koleso__ghost" type="button" data-koleso-close>Закрыть</button>
       </div>
       <p class="koleso__terms"><a href="${CONFIG.rulesUrl}" target="_blank" rel="noopener">Условия акции</a></p>
-      <p class="koleso__warning">Имеются противопоказания, необходима консультация специалиста.</p>
+      ${WARNING}
     </div>
   </div>
 </div>`;
@@ -194,6 +211,10 @@
     els = {
       panel: dialog.querySelector(".koleso__panel"),
       rotor: dialog.querySelector("[data-koleso-rotor]"),
+      burst: dialog.querySelector("[data-koleso-burst]"),
+      spin: dialog.querySelector("[data-koleso-spin]"),
+      spinStatus: dialog.querySelector("[data-koleso-spin-status]"),
+      wonTitle: dialog.querySelector("[data-koleso-won-title]"),
       form: dialog.querySelector("[data-koleso-form]"),
       name: dialog.querySelector('input[name="name"]'),
       phone: dialog.querySelector('input[name="phone"]'),
@@ -201,15 +222,19 @@
       honeypot: dialog.querySelector('input[name="booking_company_field"]'),
       submit: dialog.querySelector("[data-koleso-submit]"),
       status: dialog.querySelector("[data-koleso-status]"),
-      formView: dialog.querySelector('[data-koleso-view="form"]'),
-      resultView: dialog.querySelector('[data-koleso-view="result"]'),
+      views: {
+        spin: dialog.querySelector('[data-koleso-view="spin"]'),
+        claim: dialog.querySelector('[data-koleso-view="claim"]'),
+        done: dialog.querySelector('[data-koleso-view="done"]'),
+      },
     };
 
     dialog.addEventListener("click", (event) => {
       if (event.target === dialog || event.target.closest("[data-koleso-close]")) close();
     });
     dialog.addEventListener("keydown", onKeydown);
-    els.form.addEventListener("submit", onSubmit);
+    els.spin.addEventListener("click", onSpin);
+    els.form.addEventListener("submit", onClaim);
     els.form.addEventListener("focusin", markStarted);
     els.form.addEventListener("pointerdown", markStarted);
     bindPhoneMask(els.phone);
@@ -217,7 +242,21 @@
     els.consent.addEventListener("change", () => clearError("consent"));
 
     const saved = readStore(STORE_RESULT);
-    if (saved && saved.title) showResult(saved, false);
+    if (saved && saved.title && saved.stage === "won") {
+      won = saved;
+      if (saved.segment >= 0) setAngle(-saved.segment * STEP);
+      markWon(saved.segment);
+      showClaim(false);
+    } else if (saved && saved.title) {
+      showDone(saved, false);
+    }
+  };
+
+  const showView = (name) => {
+    dialog.dataset.view = name;
+    Object.entries(els.views).forEach(([key, view]) => {
+      view.hidden = key !== name;
+    });
   };
 
   const focusables = () =>
@@ -253,9 +292,10 @@
     root.classList.add("koleso-open");
     requestAnimationFrame(() => dialog.classList.add("is-open"));
     writeStore(STORE_SEEN, Date.now());
-    const target = els.resultView.hidden ? els.name : dialog.querySelector("[data-koleso-result-title]");
+    const view = dialog.dataset.view;
+    const target = view === "spin" ? els.spin : view === "claim" ? els.name : dialog.querySelector("[data-koleso-result-title]");
     // на телефоне не вызываем клавиатуру сразу: сначала человек видит колесо
-    if (window.matchMedia("(min-width: 900px)").matches) target.focus({ preventScroll: true });
+    if (view !== "claim" || window.matchMedia("(min-width: 900px)").matches) target.focus({ preventScroll: true });
     else els.panel.focus?.();
     if (typeof window.dhTrackMetrikaGoal === "function") {
       window.dhTrackMetrikaGoal("koleso_open", { page: window.location.pathname, how });
@@ -271,7 +311,6 @@
     }, reduceMotion.matches ? 0 : 300);
     if (lastFocus && typeof lastFocus.focus === "function") lastFocus.focus({ preventScroll: true });
   };
-
   // ---------- форма ----------
   const markStarted = () => {
     if (!els.form.dataset.startedAt) els.form.dataset.startedAt = String(Date.now());
@@ -384,33 +423,110 @@
       url: window.location.href,
       booking_company_field: els.honeypot.value.trim(),
       form_started_at: els.form.dataset.startedAt || "",
+      ...(won && won.spin && !won.demo ? { koleso_spin: won.spin } : {}),
       ...(entry && entry.url ? { entry_url: entry.url.slice(0, 1000), entry_referrer: entry.ref.slice(0, 500) } : {}),
     };
   };
 
-  const sendLead = async (data) => {
-    const response = await fetch(CONFIG.endpoint, {
+  const postJson = async (url, data) => {
+    const response = await fetch(url, {
       method: "POST",
       headers: { Accept: "application/json", "Content-Type": "application/json" },
       body: JSON.stringify(data),
     });
-    if (!response.ok) throw new Error(`lead ${response.status}`);
     const json = await response.json().catch(() => ({}));
-    if (!json || json.ok !== true) throw new Error("lead not ok");
+    if (!response.ok || !json || json.ok !== true) {
+      const error = new Error(`koleso ${response.status}`);
+      error.code = json && json.error;
+      throw error;
+    }
     return json;
   };
 
-  const demoLead = () =>
-    new Promise((resolve) => {
-      const seg = SEGMENTS[Math.floor(Math.random() * SEGMENTS.length)];
-      const until = new Date(Date.now() + CONFIG.validDays * 86400000).toLocaleDateString("ru-RU");
-      window.setTimeout(() => resolve({ ok: true, demo: true, prize: { id: seg.id, title: seg.title, until, repeat: false } }), 900);
-    });
+  const pause = (ms) => new Promise((resolve) => window.setTimeout(resolve, ms));
+
+  // превью: подарок случайный, нигде не сохраняется
+  const demoSpin = async () => {
+    await pause(700);
+    const seg = SEGMENTS[Math.floor(Math.random() * SEGMENTS.length)];
+    return { ok: true, demo: true, spin: "", prize: { id: seg.id, title: seg.title } };
+  };
+
+  const landingFor = (id) => {
+    const indexes = SEGMENTS.map((s, i) => (s.id === id ? i : -1)).filter((i) => i >= 0);
+    return indexes.length ? indexes[Math.floor(Math.random() * indexes.length)] : -1;
+  };
 
   // неразрывные дефисы: номер не переносится посреди строки
-  const maskPhone = (local) => `+7\u00a0(${local.slice(0, 3)})\u00a0***\u2011**\u2011${local.slice(8, 10)}`;
+  const maskPhone = (local) => `+7 (${local.slice(0, 3)}) ***‑**‑${local.slice(8, 10)}`;
 
-  const onSubmit = async (event) => {
+  const untilDate = () => new Date(Date.now() + CONFIG.validDays * 86400000).toLocaleDateString("ru-RU");
+
+  // ---------- шаг 1: вращение ----------
+  const onSpin = async () => {
+    if (busy) return;
+    busy = true;
+    els.spin.disabled = true;
+    els.spinStatus.dataset.state = "pending";
+    els.spinStatus.textContent = "Колесо крутится…";
+    dialog.classList.add("is-spinning");
+
+    const spin = startSpin();
+    let result = null;
+    let failure = "";
+    try {
+      result = await postJson(CONFIG.spinEndpoint, { source: CONFIG.source });
+      if (result.preview && !result.prize) result = await demoSpin();
+    } catch (error) {
+      failure = error.code || "network";
+    }
+
+    const prize = result && result.prize && result.prize.id ? result.prize : null;
+    const landing = prize ? landingFor(prize.id) : -1;
+    await spin.stopAt(landing);
+
+    busy = false;
+    dialog.classList.remove("is-spinning");
+    els.spin.disabled = false;
+
+    if (!prize) {
+      els.spinStatus.dataset.state = "error";
+      els.spinStatus.textContent =
+        failure === "too_many_spins"
+          ? `Сегодня колесо с этого устройства уже много раз крутили. Позвоните нам: ${CONFIG.phoneText}.`
+          : `Колесо не докрутилось. Попробуйте ещё раз или позвоните ${CONFIG.phoneText}.`;
+      return;
+    }
+
+    won = { stage: "won", spin: result.spin || "", id: prize.id, title: prize.title, segment: landing, demo: !!result.demo };
+    if (!won.demo) writeStore(STORE_RESULT, won);
+    markWon(landing);
+    els.spinStatus.dataset.state = "won";
+    els.spinStatus.textContent = `Вам выпало: ${prize.title}`;
+    // секунду любуемся выигрышем на большом колесе с салютом, потом форма
+    if (celebrate()) {
+      busy = true;
+      els.spin.disabled = true;
+      await pause(1300);
+      els.spin.disabled = false;
+      busy = false;
+    }
+    els.spinStatus.textContent = "";
+    showClaim(true);
+    if (typeof window.dhTrackMetrikaGoal === "function") {
+      window.dhTrackMetrikaGoal("koleso_spin", { page: window.location.pathname, prize: prize.id });
+    }
+  };
+
+  const showClaim = (focus) => {
+    els.wonTitle.textContent = won.title;
+    showView("claim");
+    markFab("won");
+    if (focus) els.wonTitle.focus({ preventScroll: true });
+  };
+
+  // ---------- шаг 2: заявка, чтобы забрать подарок ----------
+  const onClaim = async (event) => {
     event.preventDefault();
     if (busy || !validate()) return;
     const data = payload();
@@ -419,30 +535,17 @@
     els.submit.disabled = true;
     els.form.querySelectorAll("input").forEach((input) => (input.readOnly = true));
     els.status.dataset.state = "pending";
-    els.status.textContent = "Колесо крутится…";
-    dialog.classList.add("is-spinning");
-    // на телефоне кнопка внизу окна: возвращаем колесо в кадр и прячем клавиатуру
-    if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
-    const scrollBehavior = reduceMotion.matches ? "auto" : "smooth";
-    els.panel.scrollTo({ top: 0, behavior: scrollBehavior });
-    dialog.scrollTo({ top: 0, behavior: scrollBehavior });
+    els.status.textContent = "Закрепляем подарок…";
 
-    const spin = startSpin();
     let result = null;
     try {
-      result = await sendLead(data);
-      if (result.preview && !result.prize) result = await demoLead();
+      result = await postJson(CONFIG.endpoint, data);
+      if (result.preview && !result.prize) result = { ok: true, demo: true, prize: { id: won.id, title: won.title, until: untilDate(), repeat: false } };
     } catch {
       result = null;
     }
 
-    const prize = result && result.prize && result.prize.id ? result.prize : null;
-    const indexes = prize ? SEGMENTS.map((s, i) => (s.id === prize.id ? i : -1)).filter((i) => i >= 0) : [];
-    const landing = indexes.length ? indexes[Math.floor(Math.random() * indexes.length)] : -1;
-    await spin.stopAt(landing);
-
     busy = false;
-    dialog.classList.remove("is-spinning");
     els.form.querySelectorAll("input").forEach((input) => (input.readOnly = false));
     els.submit.disabled = false;
 
@@ -451,28 +554,48 @@
       els.status.textContent = `Не получилось отправить. Попробуйте ещё раз или позвоните ${CONFIG.phoneText}.`;
       return;
     }
+    els.status.textContent = "";
+    if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
 
-    const saved = prize
-      ? { id: prize.id, title: prize.title, until: prize.until, repeat: !!prize.repeat, phone: maskPhone(local), demo: !!result.demo, segment: landing }
-      : { id: "", title: "", until: "", repeat: false, phone: maskPhone(local), demo: !!result.demo, segment: -1 };
-    if (!saved.demo && saved.title) writeStore(STORE_RESULT, saved);
-    showResult(saved, true);
+    const prize = result.prize && result.prize.id ? result.prize : null;
+    const saved = {
+      stage: "claimed",
+      id: prize ? prize.id : "",
+      title: prize ? prize.title : "",
+      until: prize ? prize.until : "",
+      repeat: !!(prize && prize.repeat),
+      phone: maskPhone(local),
+      demo: !!result.demo,
+      segment: prize && prize.id === won.id ? won.segment : -1,
+    };
+    if (!saved.demo) writeStore(STORE_RESULT, saved.title ? saved : { ...saved, title: won.title });
+    showDone(saved, true);
 
     if (!saved.demo && typeof window.dhTrackMetrikaGoal === "function") {
       window.dhTrackMetrikaGoal("lead_success", { page: window.location.pathname, source: CONFIG.source, form_type: "koleso" });
     }
   };
 
-  const showResult = (saved, focus) => {
+  // выигранный сектор подсвечен и лежит поверх соседей
+  const markWon = (index) => {
+    if (index < 0) return;
+    dialog.querySelectorAll("[data-koleso-seg]").forEach((el) => {
+      const isWon = Number(el.dataset.kolesoSeg) === index;
+      el.classList.toggle("is-won", isWon);
+      if (isWon) el.parentNode.appendChild(el);
+    });
+  };
+
+  const showDone = (saved, focus) => {
     const title = dialog.querySelector("[data-koleso-result-title]");
     const text = dialog.querySelector("[data-koleso-result-text]");
     const eyebrow = dialog.querySelector("[data-koleso-result-eyebrow]");
     const note = dialog.querySelector("[data-koleso-result-note]");
     if (saved.title) {
-      eyebrow.textContent = saved.repeat ? "Вы уже участвовали" : "Ваш подарок";
+      eyebrow.textContent = saved.repeat ? "Вы уже участвовали" : "Подарок ваш";
       title.textContent = saved.title;
       text.textContent =
-        (saved.repeat ? "С этого номера колесо уже крутили, подарок за ним прежний. " : "") +
+        (saved.repeat ? "С этого номера уже участвовали в акции, за ним закреплён прежний подарок. " : "") +
         `Подарок закреплён за номером ${saved.phone}${saved.until ? ` и действует до ${saved.until}` : ""}. ` +
         "Администратор позвонит с 9:00 до 21:00 и запишет вас на удобное время.";
     } else {
@@ -481,23 +604,51 @@
       text.textContent = "Администратор позвонит с 9:00 до 21:00, назовёт ваш подарок и запишет вас на удобное время.";
     }
     note.textContent = saved.demo ? "Это превью: заявка никуда не ушла, подарок выбран случайно." : "";
-    if (saved.segment >= 0 || saved.id) {
-      const index = saved.segment >= 0 ? saved.segment : SEGMENTS.findIndex((s) => s.id === saved.id);
-      if (index >= 0) {
-        if (!focus) setAngle(-index * STEP);
-        dialog.querySelectorAll("[data-koleso-seg]").forEach((el) => {
-          const won = Number(el.dataset.kolesoSeg) === index;
-          el.classList.toggle("is-won", won);
-          if (won) el.parentNode.appendChild(el);
-        });
-      }
+    const index = saved.segment >= 0 ? saved.segment : SEGMENTS.findIndex((s) => s.id === saved.id);
+    if (index >= 0) {
+      if (!focus || saved.segment < 0) setAngle(-index * STEP);
+      markWon(index);
     }
-    els.formView.hidden = true;
-    els.resultView.hidden = false;
-    markFabDone();
+    showView("done");
+    markFab("claimed");
     if (focus) title.focus({ preventScroll: true });
   };
 
+  // ---------- салют: латунь и слоновая кость разлетаются от колеса ----------
+  const celebrate = () => {
+    if (reduceMotion.matches || typeof els.burst.animate !== "function") return false;
+    els.burst.textContent = "";
+    const colors = ["var(--k-brass)", "var(--k-brass-2)", "var(--k-ivory)", "var(--k-brass-2)", "var(--k-sand)", "var(--k-emerald-2)"];
+    const pieces = 72;
+    const size = els.burst.offsetWidth || 300;
+    for (let i = 0; i < pieces; i += 1) {
+      const bit = document.createElement("i");
+      const turn = (i / pieces) * Math.PI * 2 + Math.random() * 0.3;
+      const reach = size * (0.45 + Math.random() * 0.6);
+      const x = Math.cos(turn) * reach;
+      const y = Math.sin(turn) * reach;
+      const round = Math.random() < 0.4;
+      bit.style.background = colors[i % colors.length];
+      bit.style.width = round ? "9px" : `${7 + Math.random() * 4}px`;
+      bit.style.height = round ? "9px" : `${13 + Math.random() * 7}px`;
+      if (round) bit.style.borderRadius = "50%";
+      els.burst.appendChild(bit);
+      const spinTo = (Math.random() - 0.5) * 720;
+      bit.animate(
+        [
+          { transform: "translate(-50%, -50%) scale(.4) rotate(0deg)", opacity: 0 },
+          { opacity: 1, offset: 0.12 },
+          { transform: `translate(calc(-50% + ${x * 0.82}px), calc(-50% + ${y * 0.82}px)) rotate(${spinTo * 0.7}deg)`, opacity: 1, offset: 0.6 },
+          { transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y + size * 0.14}px)) rotate(${spinTo}deg)`, opacity: 0 },
+        ],
+        { duration: 1400 + Math.random() * 700, delay: Math.random() * 160, easing: "cubic-bezier(.16, 1, .3, 1)", fill: "forwards" },
+      );
+    }
+    window.setTimeout(() => {
+      els.burst.textContent = "";
+    }, 2600);
+    return true;
+  };
   // ---------- вращение ----------
   const setAngle = (deg) => {
     angle = deg;
@@ -570,7 +721,8 @@
     /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName || "");
 
   const mayAutoOpen = () => {
-    if (readStore(STORE_RESULT)) return false;
+    // закреплённый подарок больше не предлагаем; выпавший, но не забранный — напоминаем
+    if (readStore(STORE_RESULT)?.stage === "claimed") return false;
     const seen = Number(readStore(STORE_SEEN)) || 0;
     return Date.now() - seen > CONFIG.autoOpenEveryDays * 86400000;
   };
@@ -595,7 +747,8 @@
         open("link");
       }
     });
-    if (readStore(STORE_RESULT)) markFabDone();
+    const saved = readStore(STORE_RESULT);
+    if (saved && saved.title) markFab(saved.stage === "won" ? "won" : "claimed");
 
     if (CONFIG.autoOpenAfterMs > 0 && mayAutoOpen()) {
       window.setTimeout(() => autoOpen("timer"), CONFIG.autoOpenAfterMs);
