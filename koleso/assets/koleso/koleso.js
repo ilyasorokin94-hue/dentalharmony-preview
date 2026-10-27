@@ -1,6 +1,7 @@
 /* =========================================================================
    Колесо подарков · Зубная Гармония
-   Кнопка внизу слева открывает окно с колесом. Сначала посетитель крутит колесо без формы:
+   У нижнего края страницы выглядывает верхняя половина большого колеса («Испытайте удачу»),
+   оно медленно крутится. По нажатию колесо открывается целиком. Сначала посетитель крутит его без формы:
    подарок выбирает сервер (/api/koleso.php, api/lib/Koleso.php), колесо останавливается на нём,
    летит салют. Чтобы забрать подарок, посетитель оставляет имя и телефон: заявка уходит
    в /api/lead.php (source=koleso, koleso_spin) с той же защитой, что у формы записи,
@@ -39,9 +40,15 @@
     phoneHref: "tel:+79168629494",
     phoneText: "+7 (916) 862-94-94",
     validDays: 7, // как valid_days в api/lib/Koleso.php
-    autoOpenAfterMs: 30000, // 0 — окно само не открывается, только по кнопке
+    // окно само не открывается: вместо всплывающего окна на странице всегда видна приманка-полукруг
+    autoOpenAfterMs: 0, // >0 — открыть окно через столько миллисекунд
     autoOpenEveryDays: 3,
-    exitIntent: true, // компьютер: открыть, когда курсор уходит к вкладкам браузера
+    exitIntent: false, // компьютер: открыть, когда курсор уходит к вкладкам браузера
+    // приманка выезжает, когда посетитель ушёл с первого экрана (пролистал 60% высоты окна),
+    // но не раньше чем через 3 секунды; первый экран с кнопкой записи остаётся чистым
+    teaseAfterMs: 3000,
+    teaseAfterScreen: 0.6,
+    teaseHideDays: 3, // после крестика приманка на 3 дня сворачивается в маленькую кнопку
   };
 
   // Превью сайта отвечает на /api/ заглушкой { ok: true, preview: true } — тогда подарок
@@ -49,6 +56,7 @@
 
   const STORE_RESULT = "dh-koleso-result";
   const STORE_SEEN = "dh-koleso-seen";
+  const STORE_TEASE = "dh-koleso-tease-closed";
   const root = document.documentElement;
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
   const STEP = 360 / SEGMENTS.length;
@@ -84,7 +92,7 @@
   // длинное слово («Консультация») мельче, чтобы не залезало на ступицу и обод
   const valueSize = (value) => (value.length > 8 ? ` style="font-size:${Math.max(15, Math.floor(196 / value.length))}px"` : "");
 
-  const wheelSvg = (withText) => {
+  const wheelParts = (withText) => {
     const r = 184;
     const parts = SEGMENTS.map((seg, i) => {
       const mid = i * STEP;
@@ -99,14 +107,15 @@
     }).join("");
     const lines = SEGMENTS.map((_, i) => `<line x1="0" y1="0" x2="${point(r, i * STEP - STEP / 2).replace(" ", '" y2="')}"/>`).join("");
     return (
-      '<svg viewBox="-200 -200 400 400" aria-hidden="true" focusable="false">' +
       '<circle r="198" class="koleso-rim"/>' +
       '<circle r="191" class="koleso-rim-line"/>' +
       `<g class="koleso-segs">${parts}</g>` +
-      `<g class="koleso-lines">${lines}</g>` +
-      "</svg>"
+      `<g class="koleso-lines">${lines}</g>`
     );
   };
+
+  const wheelSvg = (withText) =>
+    `<svg viewBox="-200 -200 400 400" aria-hidden="true" focusable="false">${wheelParts(withText)}</svg>`;
 
   // ---------- кнопка ----------
   const fab = document.createElement("button");
@@ -119,10 +128,120 @@
     '<span class="koleso-fab__text" aria-hidden="true"><b>Колесо подарков</b><small>подарок к первому визиту</small></span>';
 
   // won — подарок выпал, но заявки ещё нет; claimed — подарок закреплён за номером
-  const markFab = (stage) => {
+  let stage = null;
+  const markFab = (next) => {
+    stage = next;
     fab.classList.toggle("is-done", stage === "claimed");
+    fab.querySelector(".koleso-fab__text b").textContent = stage ? "Ваш подарок" : "Колесо подарков";
     fab.querySelector(".koleso-fab__text small").textContent =
-      stage === "claimed" ? "ваш подарок закреплён" : stage === "won" ? "заберите ваш подарок" : "подарок к первому визиту";
+      stage === "claimed" ? "закреплён за номером" : stage === "won" ? "заберите подарок" : "подарок к первому визиту";
+    placeLauncher();
+  };
+
+  // ---------- приманка: верхняя половина большого колеса у нижнего края ----------
+  // Сектора с настоящими подарками медленно проезжают под указателем (оборот за 25 с),
+  // раз в 10 секунд колесо делает рывок на два сектора. Крестик сворачивает приманку
+  // в маленькую кнопку на teaseHideDays дней; после вращения вместо приманки — кнопка «Ваш подарок».
+  const tease = document.createElement("div");
+  tease.className = "koleso-tease";
+  tease.hidden = true;
+  tease.innerHTML =
+    '<button class="koleso-tease__open" type="button" aria-haspopup="dialog" aria-label="Колесо подарков: испытайте удачу">' +
+    '<svg viewBox="-246 -248 492 248" aria-hidden="true" focusable="false">' +
+    '<defs><path id="koleso-tease-arc" d="M-214 0A214 214 0 0 1 214 0"/></defs>' +
+    '<path class="koleso-tease__band" d="M-240 0A240 240 0 0 1 240 0H202A202 202 0 0 0 -202 0Z"/>' +
+    '<text class="koleso-tease__label"><textPath xlink:href="#koleso-tease-arc" href="#koleso-tease-arc" startOffset="50%">Испытайте удачу</textPath></text>' +
+    `<g class="koleso-tease__rotor">${wheelParts(true)}</g>` +
+    '<circle r="44" class="koleso-tease__hub"/>' +
+    '<path class="koleso-tease__pointer" d="M-14 -207H14L0 -174Z"/>' +
+    "</svg></button>" +
+    '<button class="koleso-tease__close" type="button" aria-label="Свернуть колесо подарков"><span aria-hidden="true"></span><span aria-hidden="true"></span></button>';
+  const teaseRotor = tease.querySelector(".koleso-tease__rotor");
+
+  const TEASE_TURN_MS = 25000;
+  const KICK_EVERY_MS = 10000;
+  const KICK_MS = 1200;
+  let teaseAngle = 0;
+  let teaseRaf = 0;
+  let teaseLast = 0;
+  let kickAt = 0;
+
+  const teaseFrame = (now) => {
+    const dt = teaseLast ? Math.min(64, now - teaseLast) : 0;
+    teaseLast = now;
+    teaseAngle += (dt / TEASE_TURN_MS) * 360;
+    if (!kickAt) kickAt = now + KICK_EVERY_MS;
+    let kick = 0;
+    if (now >= kickAt) {
+      const t = Math.min(1, (now - kickAt) / KICK_MS);
+      kick = 2 * STEP * (1 - Math.pow(1 - t, 3));
+      if (t === 1) {
+        teaseAngle += kick;
+        kick = 0;
+        kickAt = now + KICK_EVERY_MS;
+      }
+    }
+    teaseRotor.setAttribute("transform", `rotate(${((teaseAngle + kick) % 360).toFixed(2)})`);
+    teaseRaf = requestAnimationFrame(teaseFrame);
+  };
+  const runTease = (on) => {
+    cancelAnimationFrame(teaseRaf);
+    teaseRaf = 0;
+    teaseLast = 0;
+    kickAt = 0;
+    if (on && !reduceMotion.matches) teaseRaf = requestAnimationFrame(teaseFrame);
+  };
+
+  const teaseClosedRecently = () => Date.now() - (Number(readStore(STORE_TEASE)) || 0) < CONFIG.teaseHideDays * 86400000;
+  let teaseReady = false; // прошло teaseAfterMs
+
+  // что показать на странице: приманку-полукруг или маленькую кнопку
+  const placeLauncher = () => {
+    const useTease = !stage && !teaseClosedRecently();
+    fab.hidden = useTease;
+    tease.hidden = !useTease;
+    const shown = useTease && teaseReady;
+    tease.classList.toggle("is-shown", shown);
+    runTease(shown);
+  };
+
+  const revealTease = () => {
+    if (teaseReady) return;
+    teaseReady = true;
+    placeLauncher();
+  };
+
+  const bindTease = () => {
+    tease.querySelector(".koleso-tease__open").addEventListener("click", () => open("tease"));
+    tease.querySelector(".koleso-tease__close").addEventListener("click", () => {
+      writeStore(STORE_TEASE, Date.now());
+      tease.classList.remove("is-shown");
+      runTease(false);
+      window.setTimeout(placeLauncher, reduceMotion.matches ? 0 : 350);
+    });
+    window.setTimeout(revealTease, CONFIG.teaseAfterMs);
+    // на первом экране полукруг спрятан; пока листают вниз, он приседает, на остановке поднимается
+    const atTop = () => window.scrollY < window.innerHeight * CONFIG.teaseAfterScreen;
+    tease.classList.toggle("is-top", atTop());
+    let lastY = window.scrollY;
+    let settle = 0;
+    window.addEventListener(
+      "scroll",
+      () => {
+        const y = window.scrollY;
+        tease.classList.toggle("is-top", atTop());
+        if (y > lastY + 2) tease.classList.add("is-low");
+        else if (y < lastY - 2) tease.classList.remove("is-low");
+        lastY = y;
+        window.clearTimeout(settle);
+        settle = window.setTimeout(() => tease.classList.remove("is-low"), 450);
+      },
+      { passive: true },
+    );
+    // человек печатает в форме на странице — полукруг не мешает
+    const typing = (target) => target instanceof Element && target.matches("input, textarea, select") && !target.closest(".koleso");
+    document.addEventListener("focusin", (event) => root.classList.toggle("koleso-typing", typing(event.target)));
+    document.addEventListener("focusout", () => root.classList.remove("koleso-typing"));
   };
 
   // ---------- окно ----------
@@ -210,6 +329,7 @@
 
     els = {
       panel: dialog.querySelector(".koleso__panel"),
+      wheel: dialog.querySelector(".koleso__wheel"),
       rotor: dialog.querySelector("[data-koleso-rotor]"),
       burst: dialog.querySelector("[data-koleso-burst]"),
       spin: dialog.querySelector("[data-koleso-spin]"),
@@ -292,6 +412,17 @@
     root.classList.add("koleso-open");
     requestAnimationFrame(() => dialog.classList.add("is-open"));
     writeStore(STORE_SEEN, Date.now());
+    runTease(false);
+    if (how === "tease" && dialog.dataset.view === "spin" && !busy) {
+      // колесо в окне стоит так же, как на приманке, и выезжает снизу
+      setAngle(teaseAngle % 360);
+      if (!reduceMotion.matches) {
+        els.wheel.animate(
+          [{ transform: "translateY(55vh) scale(.62)" }, { transform: "none" }],
+          { duration: 720, easing: "cubic-bezier(.22, 1, .36, 1)" },
+        );
+      }
+    }
     const view = dialog.dataset.view;
     const target = view === "spin" ? els.spin : view === "claim" ? els.name : dialog.querySelector("[data-koleso-result-title]");
     // на телефоне не вызываем клавиатуру сразу: сначала человек видит колесо
@@ -309,6 +440,7 @@
     window.setTimeout(() => {
       dialog.hidden = true;
     }, reduceMotion.matches ? 0 : 300);
+    placeLauncher();
     if (lastFocus && typeof lastFocus.focus === "function") lastFocus.focus({ preventScroll: true });
   };
   // ---------- форма ----------
@@ -737,9 +869,17 @@
     const css = document.createElement("link");
     css.rel = "stylesheet";
     css.href = SCRIPT_SRC.replace(/koleso\.js(\?[^#]*)?$/, "koleso.css$1");
-    css.addEventListener("load", () => document.body.appendChild(fab), { once: true });
+    css.addEventListener(
+      "load",
+      () => {
+        document.body.append(tease, fab);
+        placeLauncher();
+      },
+      { once: true },
+    );
     document.head.appendChild(css);
     fab.addEventListener("click", () => open("button"));
+    bindTease();
     document.addEventListener("click", (event) => {
       const link = event.target instanceof Element ? event.target.closest("[data-koleso-open]") : null;
       if (link) {

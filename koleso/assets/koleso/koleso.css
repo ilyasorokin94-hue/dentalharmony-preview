@@ -5,6 +5,7 @@
    ========================================================================= */
 
 .koleso-fab,
+.koleso-tease,
 .koleso {
   --k-ivory: var(--ivory, #FCFAF5);
   --k-sand: var(--sand, #ECE3D3);
@@ -74,6 +75,7 @@
   transition: bottom .3s ease, transform .35s var(--k-ease), box-shadow .35s var(--k-ease);
 }
 html.has-cookie-notice .koleso-fab { --koleso-offset: var(--cookie-notice-offset, 0px); }
+.koleso-fab[hidden] { display: none; }
 html.is-booking-open .koleso-fab,
 html.has-mobile-menu .koleso-fab,
 html.dhq-lock .koleso-fab,
@@ -105,6 +107,80 @@ html.koleso-open .koleso-fab { display: none; }
   .koleso-fab__text { display: none; }
 }
 
+/* ---------- приманка: верхняя половина большого колеса у нижнего края ----------
+   Телефон: по центру; компьютер: в левом нижнем углу, текст сайта не закрывает.
+   Выезжает снизу (koleso.js → teaseAfterMs / teaseAfterScroll), пока листают вниз — приседает. */
+.koleso-tease {
+  --tx: 0px;
+  --ty: 106%;
+  position: fixed;
+  z-index: 2147481000;
+  left: max(24px, env(safe-area-inset-left));
+  bottom: var(--koleso-offset, 0px);
+  width: clamp(320px, 26vw, 400px);
+  transform: translate(var(--tx), var(--ty));
+  transition: transform .8s var(--k-ease), bottom .3s ease;
+  pointer-events: none;
+}
+.koleso-tease[hidden] { display: none; }
+.koleso-tease.is-shown { --ty: 0px; pointer-events: auto; }
+.koleso-tease.is-shown:where(.is-low) { --ty: 34%; }
+html.has-cookie-notice .koleso-tease { --koleso-offset: var(--cookie-notice-offset, 0px); }
+html.is-booking-open .koleso-tease,
+html.has-mobile-menu .koleso-tease,
+html.dhq-lock .koleso-tease,
+html.koleso-open .koleso-tease,
+html.koleso-typing .koleso-tease,
+.koleso-tease.is-top { --ty: 106%; pointer-events: none; }
+
+.koleso-tease__open {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.koleso-tease__open svg { display: block; width: 100%; height: auto; filter: drop-shadow(0 -8px 26px rgba(8, 28, 25, .32)); }
+.koleso-tease__open:focus-visible { outline: none; }
+.koleso-tease__open:focus-visible .koleso-tease__band { stroke: var(--k-brass-2); stroke-width: 4; }
+/* латунный обод с надписью — он не крутится, крутится колесо внутри */
+.koleso-tease__band { fill: var(--k-moss); stroke: var(--k-brass); stroke-width: 1.5; }
+.koleso-tease__label { fill: var(--k-brass-2); font: 600 21px var(--k-sans); letter-spacing: .16em; text-transform: uppercase; text-anchor: middle; }
+.koleso-tease__rotor .koleso-seg__value { font-size: 25px; }
+.koleso-tease__hub { fill: var(--k-ivory); stroke: var(--k-brass); stroke-width: 2.5; }
+.koleso-tease__pointer { fill: var(--k-brass-2); stroke: var(--k-moss-2); stroke-width: 2; stroke-linejoin: round; }
+.koleso-tease__open:hover .koleso-tease__band { fill: var(--k-moss-3); }
+
+.koleso-tease__close {
+  position: absolute;
+  right: 0;
+  top: 22%;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--k-ivory);
+  color: var(--k-ink);
+  box-shadow: inset 0 0 0 1px var(--k-line-strong), 0 6px 16px -6px rgba(8, 28, 25, .5);
+  cursor: pointer;
+}
+.koleso-tease__close::before { content: ""; position: absolute; inset: -6px; }
+.koleso-tease__close span { position: absolute; left: 10px; right: 10px; top: 15px; height: 1.5px; background: currentColor; }
+.koleso-tease__close span:first-child { transform: rotate(45deg); }
+.koleso-tease__close span:last-child { transform: rotate(-45deg); }
+.koleso-tease__close:focus-visible { outline: 2px solid var(--k-brass); outline-offset: 2px; }
+
+@media (max-width: 760px) {
+  .koleso-tease { --tx: -50%; left: 50%; width: min(78vw, 330px); }
+  /* плашка cookie на телефоне высокая: пока её не закрыли, полукруг не показываем */
+  html.has-cookie-notice .koleso-tease { --ty: 106%; pointer-events: none; }
+  /* кнопка «Записаться» (dh-quick) справа внизу поднимается над полукругом, чтобы он её не закрывал */
+  html:has(.koleso-tease.is-shown:not(.is-top):not([hidden])):not(.has-cookie-notice):not(.koleso-open):not(.koleso-typing) .dhq { --dhq-offset: calc(min(78vw, 330px) * .5); }
+}
+
 /* ---------- окно ---------- */
 html.koleso-open,
 html.koleso-open body { overflow: hidden; }
@@ -130,8 +206,8 @@ html.koleso-open body { overflow: hidden; }
 .koleso__panel {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
-  width: min(100%, 1040px);
+  grid-template-columns: minmax(0, 1.12fr) minmax(0, 1fr);
+  width: min(100%, 1180px);
   background: var(--k-ivory);
   color: var(--k-ink);
   font-family: var(--k-sans);
@@ -171,7 +247,7 @@ html.koleso-open body { overflow: hidden; }
   padding: clamp(36px, 5vw, 64px) clamp(24px, 4vw, 48px);
   background: radial-gradient(120% 90% at 50% 40%, var(--k-moss-3) 0%, var(--k-moss) 55%, var(--k-moss-2) 100%);
 }
-.koleso__wheel { position: relative; width: min(100%, 420px); aspect-ratio: 1; }
+.koleso__wheel { position: relative; width: min(100%, 560px, calc(100vh - 150px)); aspect-ratio: 1; }
 .koleso__rotor { width: 100%; height: 100%; will-change: transform; }
 .koleso__rotor svg { display: block; width: 100%; height: 100%; filter: drop-shadow(0 26px 40px rgba(0, 0, 0, .35)); }
 .koleso__hub {
@@ -286,7 +362,7 @@ html.koleso-open body { overflow: hidden; }
   .koleso__panel::after { display: none; }
   .koleso__stage { flex: 1 1 0; min-height: 230px; container-type: size; padding: calc(env(safe-area-inset-top) + 52px) 20px 18px; }
   .koleso[data-view="claim"] .koleso__stage { min-height: 150px; padding-top: calc(env(safe-area-inset-top) + 40px); padding-bottom: 14px; }
-  .koleso__wheel { width: min(100cqw, 100cqh, 400px); }
+  .koleso__wheel { width: min(100cqw, 100cqh, 520px); }
   .koleso__close { top: calc(env(safe-area-inset-top) + 10px); right: 12px; background: rgba(252, 250, 245, .92); }
   .koleso__body { flex: none; display: block; padding: 22px 20px calc(18px + env(safe-area-inset-bottom)); }
   .koleso__eyebrow { margin-bottom: 10px; font-size: 12px; }
@@ -313,7 +389,8 @@ html.koleso-open body { overflow: hidden; }
 @media (prefers-reduced-motion: reduce) {
   .koleso,
   .koleso__panel,
-  .koleso-fab { transition: none; }
+  .koleso-fab,
+  .koleso-tease { transition: none; }
   .koleso-fab__wheel svg,
   .koleso-fab:hover .koleso-fab__wheel svg { animation: none; }
 }
