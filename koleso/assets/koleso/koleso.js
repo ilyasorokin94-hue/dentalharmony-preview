@@ -156,7 +156,20 @@
     '<path class="koleso-tease__pointer" d="M-14 -207H14L0 -174Z"/>' +
     "</svg></button>" +
     '<button class="koleso-tease__close" type="button" aria-label="Свернуть колесо подарков"><span aria-hidden="true"></span><span aria-hidden="true"></span></button>';
-  const teaseRotor = tease.querySelector(".koleso-tease__rotor");
+  // при первом появлении колесо целиком скатывается сверху экрана на своё место у нижнего края
+  const drop = document.createElement("span");
+  drop.className = "koleso-tease__drop";
+  drop.setAttribute("aria-hidden", "true");
+  drop.innerHTML =
+    '<svg viewBox="-246 -246 492 492" focusable="false">' +
+    '<path class="koleso-tease__band" fill-rule="evenodd" d="M-240 0A240 240 0 1 1 240 0A240 240 0 1 1 -240 0ZM-202 0A202 202 0 1 0 202 0A202 202 0 1 0 -202 0Z"/>' +
+    '<text class="koleso-tease__label"><textPath xlink:href="#koleso-tease-arc" href="#koleso-tease-arc" startOffset="50%">Испытайте удачу</textPath></text>' +
+    `<g class="koleso-tease__rotor">${wheelParts(true)}</g>` +
+    '<circle r="44" class="koleso-tease__hub"/>' +
+    '<path class="koleso-tease__pointer" d="M-14 -207H14L0 -174Z"/>' +
+    "</svg>";
+  tease.appendChild(drop);
+  const teaseRotors = [...tease.querySelectorAll(".koleso-tease__rotor")];
 
   const TEASE_TURN_MS = 25000;
   const KICK_EVERY_MS = 10000;
@@ -181,7 +194,8 @@
         kickAt = now + KICK_EVERY_MS;
       }
     }
-    teaseRotor.setAttribute("transform", `rotate(${((teaseAngle + kick) % 360).toFixed(2)})`);
+    const turn = `rotate(${((teaseAngle + kick) % 360).toFixed(2)})`;
+    teaseRotors.forEach((rotor) => rotor.setAttribute("transform", turn));
     teaseRaf = requestAnimationFrame(teaseFrame);
   };
   const runTease = (on) => {
@@ -203,6 +217,43 @@
     const shown = useTease && teaseReady;
     tease.classList.toggle("is-shown", shown);
     runTease(shown);
+    maybeDrop();
+  };
+
+  // Колесо катится по экрану сверху вниз: оборотов столько, сколько прокатилось бы колесо
+  // этого размера на этом пути (не меньше одного), в конце лёгкий отскок. Один раз за визит.
+  let dropped = false;
+  const maybeDrop = () => {
+    if (dropped || tease.hidden || !tease.classList.contains("is-shown")) return;
+    tease.classList.add("is-dropping");
+    if (getComputedStyle(tease).getPropertyValue("--ty").trim() !== "0px") {
+      tease.classList.remove("is-dropping"); // полукруг сейчас спрятан (первый экран, cookie, окно записи)
+      return;
+    }
+    dropped = true;
+    const box = tease.getBoundingClientRect();
+    const radius = (box.width / 2) * (240 / 246);
+    const distance = box.bottom - (radius + 88);
+    if (reduceMotion.matches || distance < 120 || typeof drop.animate !== "function") {
+      tease.classList.remove("is-dropping");
+      return;
+    }
+    const turns = Math.max(1, Math.round(distance / radius / (2 * Math.PI)));
+    const from = `translateY(calc(50% - ${Math.round(distance)}px)) rotate(${-360 * turns}deg)`;
+    const rest = "translateY(50%) rotate(0deg)";
+    drop
+      .animate(
+        [
+          { transform: from, opacity: 0, easing: "cubic-bezier(.42, 0, .9, .6)" },
+          { opacity: 1, offset: 0.08 },
+          { transform: rest, offset: 0.74, easing: "cubic-bezier(.2, .7, .4, 1)" },
+          { transform: "translateY(calc(50% - 16px)) rotate(0deg)", offset: 0.86, easing: "cubic-bezier(.6, 0, .8, .4)" },
+          { transform: rest },
+        ],
+        { duration: 1900 },
+      )
+      .finished.catch(() => {})
+      .then(() => tease.classList.remove("is-dropping"));
   };
 
   const revealTease = () => {
@@ -230,6 +281,7 @@
       () => {
         const y = window.scrollY;
         tease.classList.toggle("is-top", atTop());
+        maybeDrop();
         if (y > lastY + 2) tease.classList.add("is-low");
         else if (y < lastY - 2) tease.classList.remove("is-low");
         lastY = y;
@@ -242,6 +294,8 @@
     const typing = (target) => target instanceof Element && target.matches("input, textarea, select") && !target.closest(".koleso");
     document.addEventListener("focusin", (event) => root.classList.toggle("koleso-typing", typing(event.target)));
     document.addEventListener("focusout", () => root.classList.remove("koleso-typing"));
+    // полукруг мог ждать, пока закроют плашку cookie или окно записи
+    new MutationObserver(maybeDrop).observe(root, { attributes: true, attributeFilter: ["class"] });
   };
 
   // ---------- окно ----------
