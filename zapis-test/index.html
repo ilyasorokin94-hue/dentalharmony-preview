@@ -57,7 +57,7 @@
 [data-zp] .zp-field__label { font: 500 16px/1.3 var(--zp-sans); color: var(--zp-ink); }
 .zp-field__opt { font-weight: 400; color: var(--zp-muted); }
 [data-zp] .zp-field__input {
-  width: 100%; min-height: 58px; padding: 12px 18px; margin: 0;
+  width: 100%; min-height: 54px; padding: 11px 16px; margin: 0;
   border: 2px solid var(--zp-field); border-radius: 12px; background: var(--zp-field-bg);
   font: 500 20px/1.2 var(--zp-sans); color: #18211F;
   transition: border-color .2s, box-shadow .2s;
@@ -123,17 +123,22 @@
 .dhq .dhq__zp .dhq__form { gap: 18px; padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none; }
 .dhq .dhq__zp .zp-done { padding-top: 6px; }
 
-/* на телефоне крупно: поля и кнопка 64 px, подписи 18 px */
+/* на телефоне компактно: вся форма с кнопкой помещается над клавиатурой (Илья, 06.11) */
 @media (max-width: 760px) {
-  .zp-form { gap: 16px; }
-  [data-zp] .zp-field__label { font-size: 18px; }
-  [data-zp] .zp-field__input { min-height: 64px; font-size: 22px; padding: 14px 18px; }
-  [data-zp] .zp-consent__row { font-size: 16px; }
-  .zp-consent__box { width: 28px; height: 28px; }
-  [data-zp] .zp-form__submit { min-height: 64px; font-size: 20px; }
-  .zp-done__txt { font-size: 18px; }
+  .zp-form { gap: 12px; }
+  .zp-field { gap: 5px; }
+  [data-zp] .zp-field__label { font-size: 16px; }
+  [data-zp] .zp-field__input { min-height: 50px; font-size: 18px; padding: 10px 14px; border-radius: 10px; }
+  [data-zp] .zp-consent__row { gap: 12px; padding: 0; font-size: 14px; line-height: 1.4; }
+  .zp-consent__box { width: 24px; height: 24px; }
+  [data-zp] .zp-form__submit { min-height: 54px; margin-top: 2px; font-size: 18px; }
+  .booking-modal__zp .booking-modal__header { margin-bottom: 14px; }
+  .contacts-form [data-zp-step="form"] .contacts-form__lead { margin-bottom: 14px; }
+  .dhq .dhq__zp .dhq__lead { margin: 6px 0 14px; }
+  .dhq .dhq__zp .dhq__form { gap: 12px; }
+  .zp-done__txt { font-size: 17px; }
   .zp-done__actions { flex-direction: column; }
-  [data-zp] .zp-done__actions .zp-btn { width: 100%; min-height: 64px; font-size: 18px; }
+  [data-zp] .zp-done__actions .zp-btn { width: 100%; min-height: 54px; font-size: 17px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -246,14 +251,14 @@ h1:focus, h2:focus { outline: none; }
 
 @media (max-width: 760px) {
   body { font-size: 18px; }
-  .zp__main { gap: 18px; padding: 12px var(--gutter) 36px; }
+  .zp__main { gap: 14px; padding: 10px var(--gutter) 36px; }
   .zp__logo img { height: 44px; }
   .zp__home { padding: 0 18px; font-size: 16px; }
   .zp-page .zp-done__title { font-size: 36px; }
   .zp__center { align-self: start; }
   .zp__eyebrow { display: none; }
-  .zp h1 { font-size: 38px; line-height: 1.04; }
-  .zp__lead { margin: 10px 0 20px; font-size: 18px; color: var(--ink); opacity: .86; }
+  .zp h1 { font-size: 32px; line-height: 1.06; }
+  .zp__lead { margin: 8px 0 14px; font-size: 16px; color: var(--ink); opacity: .86; }
   .zp__aside { grid-template-columns: 1fr; padding: 28px var(--gutter) 32px; gap: 22px; }
   /* место под плашку cookie, чтобы низ страницы докручивался из-под неё */
   .has-cookie-notice .zp__aside { padding-bottom: calc(var(--cookie-notice-offset, 0px) + 16px); }
