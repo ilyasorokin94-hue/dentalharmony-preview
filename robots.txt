@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /yandex-katalog/
+Allow: /yandex-istorii/
 Allow: /yandex-vitrina/
 Disallow: /
